@@ -23,6 +23,19 @@ const Header = () => {
   const toggleMenu = () => setIsMenuOpen(!isMenuOpen);
   const toggleCart = () => setIsCartOpen(!isCartOpen);
   
+  const scrollToSection = (sectionId: string) => {
+    // First navigate to home page if not already there
+    if (location !== '/') {
+      window.location.href = `/#${sectionId}`;
+      return;
+    }
+    
+    const section = document.getElementById(sectionId);
+    if (section) {
+      section.scrollIntoView({ behavior: 'smooth' });
+    }
+  };
+  
   return (
     <>
       <header className="bg-primary text-white">
@@ -46,20 +59,29 @@ const Header = () => {
                   Book Now
                 </span>
               </Link>
-              <Link href="/#services">
-                <span className="hover:text-secondary transition-colors cursor-pointer">Services</span>
-              </Link>
+              <span 
+                onClick={() => scrollToSection('services')}
+                className="hover:text-secondary transition-colors cursor-pointer"
+              >
+                Services
+              </span>
               <Link href="/shop">
                 <span className={`hover:text-secondary transition-colors cursor-pointer ${location === '/shop' ? 'text-secondary' : ''}`}>
                   Shop
                 </span>
               </Link>
-              <Link href="/#about">
-                <span className="hover:text-secondary transition-colors cursor-pointer">About</span>
-              </Link>
-              <Link href="/#contact">
-                <span className="hover:text-secondary transition-colors cursor-pointer">Contact</span>
-              </Link>
+              <span 
+                onClick={() => scrollToSection('about')}
+                className="hover:text-secondary transition-colors cursor-pointer"
+              >
+                About
+              </span>
+              <span 
+                onClick={() => scrollToSection('contact')}
+                className="hover:text-secondary transition-colors cursor-pointer"
+              >
+                Contact
+              </span>
               <div className="relative md:hidden">
                 <Button 
                   variant="ghost" 

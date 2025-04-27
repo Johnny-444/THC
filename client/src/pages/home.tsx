@@ -1,10 +1,11 @@
+import { useEffect } from 'react';
 import Hero from '@/components/home/hero';
 import Features from '@/components/home/features';
 import Testimonials from '@/components/home/testimonials';
 import AboutContact from '@/components/home/about-contact';
 import { useQuery } from '@tanstack/react-query';
 import { Service } from '@shared/schema';
-import { Link } from 'wouter';
+import { Link, useLocation } from 'wouter';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 
@@ -13,6 +14,26 @@ const Home = () => {
   const { data: services, isLoading } = useQuery<Service[]>({
     queryKey: ['/api/services'],
   });
+  
+  const [location] = useLocation();
+  
+  // Handle scrolling to section based on URL hash
+  useEffect(() => {
+    // Get the hash from the URL (e.g., "#about", "#contact", "#services")
+    const hash = window.location.hash;
+    if (hash) {
+      // Remove the "#" symbol to get the section ID
+      const sectionId = hash.substring(1);
+      const section = document.getElementById(sectionId);
+      
+      if (section) {
+        // Add a small delay to ensure the page is fully rendered
+        setTimeout(() => {
+          section.scrollIntoView({ behavior: 'smooth' });
+        }, 100);
+      }
+    }
+  }, [location]);
   
   return (
     <>
