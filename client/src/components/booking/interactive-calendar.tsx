@@ -36,7 +36,7 @@ const InteractiveCalendar = () => {
     selectedBarber, setSelectedBarber,
     selectedDate, setSelectedDate,
     selectedTime, setSelectedTime,
-    goToNextStep
+    goToNextStep, setCurrentStep
   } = useBooking();
 
   // Calendar state
@@ -447,7 +447,12 @@ const InteractiveCalendar = () => {
         <Button 
           className="w-full bg-secondary hover:bg-secondary/90"
           disabled={!canProceed}
-          onClick={goToNextStep}
+          onClick={() => {
+            // Force the step change directly
+            if (canProceed) {
+              setCurrentStep(4); // Skip directly to step 4 (customer details)
+            }
+          }}
         >
           Continue to Customer Details
         </Button>
