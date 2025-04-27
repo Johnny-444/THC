@@ -1,46 +1,43 @@
-import { CheckCircle2 } from 'lucide-react';
+import React from 'react';
+import { useBooking } from '@/context/booking-context';
+import ServiceSelection from './service-selection';
+import BarberSelection from './barber-selection';
+import DateTimeSelection from './date-time-selection';
+import CustomerDetailsForm from './customer-details';
+import InteractiveCalendar from './interactive-calendar';
 
 interface BookingStepsProps {
   currentStep: number;
 }
 
 const BookingSteps: React.FC<BookingStepsProps> = ({ currentStep }) => {
-  const steps = [
-    { number: 1, label: 'Select Service' },
-    { number: 2, label: 'Choose Barber' },
-    { number: 3, label: 'Pick Date & Time' },
-    { number: 4, label: 'Your Details' }
-  ];
+  const { resetBooking } = useBooking();
 
+  // Legacy step-by-step booking flow
+  const renderStepContent = () => {
+    switch (currentStep) {
+      case 1:
+        return <ServiceSelection />;
+      case 2:
+        return <BarberSelection />;
+      case 3:
+        return <DateTimeSelection />;
+      case 4:
+        return <CustomerDetailsForm />;
+      default:
+        return <div>Invalid step</div>;
+    }
+  };
+
+  // Use the unified interactive calendar for the first 3 steps
+  // and only show customer details form for the last step
   return (
-    <div className="flex justify-center mb-10">
-      {steps.map((step, index) => (
-        <div key={step.number} className="relative">
-          <div className="flex items-center">
-            <div 
-              className={`z-10 flex items-center justify-center w-10 h-10 rounded-full font-bold
-                ${currentStep > step.number 
-                  ? 'bg-green-500 text-white' 
-                  : currentStep === step.number 
-                    ? 'bg-secondary text-white' 
-                    : 'bg-gray-300 text-primary'}`}
-            >
-              {currentStep > step.number ? <CheckCircle2 className="h-6 w-6" /> : step.number}
-            </div>
-            <div className="hidden md:block ml-2 mr-16 text-sm font-medium text-gray-500">
-              <span className={currentStep >= step.number ? 'text-primary font-medium' : ''}>
-                {step.label}
-              </span>
-            </div>
-          </div>
-          {index < steps.length - 1 && (
-            <div 
-              className={`hidden md:block absolute top-5 left-10 w-[calc(100%-20px)] h-0.5 
-                ${currentStep > step.number ? 'bg-green-500' : 'bg-gray-300'}`}
-            ></div>
-          )}
-        </div>
-      ))}
+    <div className="w-full max-w-6xl mx-auto">
+      {currentStep < 4 ? (
+        <InteractiveCalendar />
+      ) : (
+        <CustomerDetailsForm />
+      )}
     </div>
   );
 };
