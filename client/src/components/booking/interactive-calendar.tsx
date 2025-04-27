@@ -445,7 +445,7 @@ const InteractiveCalendar = () => {
       {/* Continue button */}
       <div className="p-4 border-t mt-4">
         <Button 
-          className="w-full bg-[#2193b0] hover:bg-[#1c7c94]"
+          className="w-full bg-secondary hover:bg-secondary/90"
           disabled={!canProceed}
           onClick={goToNextStep}
         >
@@ -547,7 +547,7 @@ const InteractiveCalendar = () => {
                             {filteredServices.map(service => (
                               <div 
                                 key={service.id}
-                                className="p-4 border rounded-lg cursor-pointer hover:border-[#2193b0] hover:bg-gray-50 transition-colors"
+                                className="p-4 border rounded-lg cursor-pointer hover:border-secondary hover:bg-gray-50 transition-colors"
                                 onClick={() => addService(service)}
                               >
                                 <div className="flex justify-between items-start">
@@ -586,7 +586,7 @@ const InteractiveCalendar = () => {
                               {categoryServices.map(service => (
                                 <div 
                                   key={service.id}
-                                  className="p-4 border rounded-lg cursor-pointer hover:border-[#2193b0] hover:bg-gray-50 transition-colors"
+                                  className="p-4 border rounded-lg cursor-pointer hover:border-secondary hover:bg-gray-50 transition-colors"
                                   onClick={() => addService(service)}
                                 >
                                   <div className="flex justify-between items-start">
@@ -638,7 +638,7 @@ const InteractiveCalendar = () => {
               {barbers?.map(barber => (
                 <div 
                   key={barber.id}
-                  className="p-4 border rounded-lg cursor-pointer hover:border-[#2193b0] hover:bg-gray-50 transition-colors"
+                  className="p-4 border rounded-lg cursor-pointer hover:border-secondary hover:bg-gray-50 transition-colors"
                   onClick={() => selectBarber(barber)}
                 >
                   <div className="flex items-center">
