@@ -253,7 +253,7 @@ const CustomerDetailsForm = () => {
             className="w-full bg-secondary hover:bg-red-700"
             disabled={createAppointment.isPending}
           >
-            Proceed to Payment
+            {createAppointment.isPending ? 'Processing...' : 'Proceed to Payment'}
           </Button>
         </form>
       </Form>
@@ -330,7 +330,7 @@ const PaymentForm: React.FC<PaymentFormProps> = ({ appointmentId, totalPrice, re
         className="w-full bg-secondary hover:bg-red-700"
         disabled={!stripe || isProcessing}
       >
-        Pay Now
+        {isProcessing ? 'Processing...' : 'Pay Now'}
       </Button>
     </form>
   );

@@ -233,7 +233,7 @@ const DateTimeSelection = () => {
               
               {timeSlotsLoading ? (
                 <div className="flex justify-center py-4">
-                  <div className="text-gray-500">Loading time slots...</div>
+                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-secondary"></div>
                 </div>
               ) : (
                 <>
