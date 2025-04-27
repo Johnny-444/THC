@@ -42,23 +42,23 @@ const Header = () => {
               'hidden'}`}
             >
               <Link href="/booking">
-                <a className={`hover:text-secondary transition-colors ${location === '/booking' ? 'text-secondary' : ''}`}>
+                <span className={`hover:text-secondary transition-colors cursor-pointer ${location === '/booking' ? 'text-secondary' : ''}`}>
                   Book Now
-                </a>
+                </span>
               </Link>
               <Link href="/#services">
-                <a className="hover:text-secondary transition-colors">Services</a>
+                <span className="hover:text-secondary transition-colors cursor-pointer">Services</span>
               </Link>
               <Link href="/shop">
-                <a className={`hover:text-secondary transition-colors ${location === '/shop' ? 'text-secondary' : ''}`}>
+                <span className={`hover:text-secondary transition-colors cursor-pointer ${location === '/shop' ? 'text-secondary' : ''}`}>
                   Shop
-                </a>
+                </span>
               </Link>
               <Link href="/#about">
-                <a className="hover:text-secondary transition-colors">About</a>
+                <span className="hover:text-secondary transition-colors cursor-pointer">About</span>
               </Link>
               <Link href="/#contact">
-                <a className="hover:text-secondary transition-colors">Contact</a>
+                <span className="hover:text-secondary transition-colors cursor-pointer">Contact</span>
               </Link>
               <div className="relative md:hidden">
                 <Button 
