@@ -1,8 +1,9 @@
 import { useState, useEffect } from 'react';
 import { Link, useLocation } from 'wouter';
-import { Scissors, Menu, X, ShoppingCart } from 'lucide-react';
+import { Scissors, Menu, X, ShoppingCart, User, LogOut } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useCart } from '@/context/cart-context';
+import { useAuth } from '@/hooks/use-auth';
 import CartOverlay from '@/components/shop/cart-overlay';
 
 const Header = () => {
@@ -10,6 +11,7 @@ const Header = () => {
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [location] = useLocation();
   const { cartItems } = useCart();
+  const { user, logoutMutation } = useAuth();
   
   // Close mobile menu when navigation occurs
   useEffect(() => {

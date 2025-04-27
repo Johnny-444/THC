@@ -5,12 +5,14 @@ import session from "express-session";
 import { scrypt, randomBytes, timingSafeEqual } from "crypto";
 import { promisify } from "util";
 import { storage } from "./storage";
-import { User } from "@shared/schema";
-import MemoryStore from "memorystore";
+import { User as UserType } from "@shared/schema";
+// @ts-ignore
+import memorystore from "memorystore";
 
 declare global {
   namespace Express {
-    interface User extends User {}
+    // Define User interface for passport
+    interface User extends UserType {}
   }
 }
 
@@ -30,13 +32,13 @@ async function comparePasswords(supplied: string, stored: string) {
 }
 
 export function setupAuth(app: Express) {
-  const MemorySessionStore = MemoryStore(session);
+  const MemoryStore = memorystore(session);
   
   const sessionSettings: session.SessionOptions = {
     secret: process.env.SESSION_SECRET || "very-secret-key-change-me",
     resave: false,
     saveUninitialized: false,
-    store: new MemorySessionStore({
+    store: new MemoryStore({
       checkPeriod: 86400000 // prune expired entries every 24h
     }),
     cookie: {
@@ -108,7 +110,7 @@ export function setupAuth(app: Express) {
   });
 
   app.post("/api/login", (req, res, next) => {
-    passport.authenticate("local", (err, user, info) => {
+    passport.authenticate("local", (err: any, user: UserType, info: { message?: string }) => {
       if (err) return next(err);
       if (!user) return res.status(401).json({ message: info?.message || "Invalid username or password" });
       
@@ -131,7 +133,7 @@ export function setupAuth(app: Express) {
   app.get("/api/user", (req, res) => {
     if (!req.isAuthenticated()) return res.status(401).json({ message: "Not authenticated" });
     // Don't send the password in the response
-    const { password, ...userWithoutPassword } = req.user as User;
+    const { password, ...userWithoutPassword } = req.user as UserType;
     res.json(userWithoutPassword);
   });
   
@@ -154,7 +156,7 @@ export function setupAuth(app: Express) {
       return res.status(401).json({ message: "Not authenticated" });
     }
     
-    const user = req.user as User;
+    const user = req.user as UserType;
     if (!user.isAdmin) {
       return res.status(403).json({ message: "Not authorized to perform this action" });
     }
