@@ -43,10 +43,11 @@ const ServiceSelection = () => {
     goToNextStep();
   };
   
+  // We won't show a loading indicator anymore
   if (categoriesLoading || servicesLoading) {
     return (
       <div className="flex justify-center py-12">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-secondary"></div>
+        <div className="text-gray-500">Loading services...</div>
       </div>
     );
   }
