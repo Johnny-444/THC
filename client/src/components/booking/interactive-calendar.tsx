@@ -48,6 +48,7 @@ const InteractiveCalendar = () => {
   const [showServiceSelect, setShowServiceSelect] = useState(false);
   const [showBarberSelect, setShowBarberSelect] = useState(false);
   const [selectedServices, setSelectedServices] = useState<Service[]>([]);
+  const [selectedCategoryId, setSelectedCategoryId] = useState<number | null>(null);
   
   // Fetch services
   const { data: services } = useQuery<Service[]>({
@@ -138,6 +139,12 @@ const InteractiveCalendar = () => {
     setShowServiceSelect(false);
   };
   
+  // Handle opening the service selection modal
+  const openServiceSelection = () => {
+    setSelectedCategoryId(null); // Reset category filter
+    setShowServiceSelect(true);
+  };
+  
   // Update the selected barber
   const selectBarber = (barber: Barber) => {
     setSelectedBarber(barber);
@@ -178,7 +185,7 @@ const InteractiveCalendar = () => {
                 </div>
                 <button 
                   className="text-[#2193b0]"
-                  onClick={() => setShowServiceSelect(true)}
+                  onClick={openServiceSelection}
                 >
                   Change
                 </button>
@@ -187,7 +194,7 @@ const InteractiveCalendar = () => {
               <Button 
                 variant="outline" 
                 className="w-full flex justify-between items-center border-dashed border-2 p-4 h-auto"
-                onClick={() => setShowServiceSelect(true)}
+                onClick={openServiceSelection}
               >
                 <span>Select a service</span>
                 <PlusCircle className="h-5 w-5" />
@@ -233,7 +240,7 @@ const InteractiveCalendar = () => {
             <div className="mb-6">
               <button 
                 className="flex items-center text-[#2193b0] font-medium"
-                onClick={() => setShowServiceSelect(true)}
+                onClick={openServiceSelection}
               >
                 <PlusCircle className="h-5 w-5 mr-2" />
                 Add another service
@@ -470,11 +477,58 @@ const InteractiveCalendar = () => {
             
             <div className="p-4 overflow-y-auto max-h-[60vh]">
               {/* Fetch categories and group services by category */}
-              <div className="space-y-6">
-                {services && (
-                  <>
-                    {/* Group services by category */}
+              {services && (
+                <>
+                  {/* Category filter tabs */}
+                  <div className="mb-4 border-b">
+                    <div className="flex overflow-x-auto pb-2 gap-1" style={{ scrollbarWidth: 'none' }}>
+                      <button 
+                        className={`px-3 py-1.5 rounded-full text-sm font-medium whitespace-nowrap transition-colors
+                          ${selectedCategoryId === null ? 'bg-[#2193b0] text-white' : 'bg-gray-100 hover:bg-gray-200'}`}
+                        onClick={() => setSelectedCategoryId(null)}
+                      >
+                        All Services
+                      </button>
+                      {(() => {
+                        const categoryNames: {[key: number]: string} = {
+                          1: 'Haircuts',
+                          2: 'Beard',
+                          3: 'Packages', 
+                          4: 'Color Services',
+                          5: 'Specialty Services',
+                          6: 'Kids Services'
+                        };
+                        
+                        // Create unique categories from services
+                        const categories = new Set<number>();
+                        services.forEach(service => {
+                          if (service.categoryId !== null && service.categoryId !== undefined) {
+                            categories.add(service.categoryId);
+                          }
+                        });
+                        
+                        return Array.from(categories).map(categoryId => (
+                          <button 
+                            key={categoryId}
+                            className={`px-3 py-1.5 rounded-full text-sm font-medium whitespace-nowrap transition-colors
+                              ${selectedCategoryId === categoryId ? 'bg-[#2193b0] text-white' : 'bg-gray-100 hover:bg-gray-200'}`}
+                            onClick={() => setSelectedCategoryId(categoryId)}
+                          >
+                            {categoryNames[categoryId] || `Category ${categoryId}`}
+                          </button>
+                        ));
+                      })()}
+                    </div>
+                  </div>
+                  
+                  {/* Services list */}
+                  <div className="space-y-6 mt-4">
                     {(() => {
+                      // Filter services by selected category if any
+                      const filteredServices = selectedCategoryId === null
+                        ? services
+                        : services.filter(service => service.categoryId === selectedCategoryId);
+                      
                       // Group services by category
                       const servicesByCategory: {[key: number]: Service[]} = {};
                       const categoryNames: {[key: number]: string} = {
@@ -486,7 +540,32 @@ const InteractiveCalendar = () => {
                         6: 'Kids Services'
                       };
                       
-                      services.forEach(service => {
+                      // If a category is selected, don't group them
+                      if (selectedCategoryId !== null) {
+                        return (
+                          <div className="space-y-3">
+                            {filteredServices.map(service => (
+                              <div 
+                                key={service.id}
+                                className="p-4 border rounded-lg cursor-pointer hover:border-[#2193b0] hover:bg-gray-50 transition-colors"
+                                onClick={() => addService(service)}
+                              >
+                                <div className="flex justify-between items-start">
+                                  <div>
+                                    <h4 className="font-bold">{service.name}</h4>
+                                    <p className="text-gray-500">{service.duration} min</p>
+                                    <p className="text-sm text-gray-600 mt-1">{service.description}</p>
+                                  </div>
+                                  <span className="font-bold text-[#2193b0] whitespace-nowrap ml-4">${service.price}</span>
+                                </div>
+                              </div>
+                            ))}
+                          </div>
+                        );
+                      }
+                      
+                      // Group by category if no category filter is applied
+                      filteredServices.forEach(service => {
                         if (service.categoryId !== null && service.categoryId !== undefined) {
                           if (!servicesByCategory[service.categoryId]) {
                             servicesByCategory[service.categoryId] = [];
@@ -525,9 +604,9 @@ const InteractiveCalendar = () => {
                         );
                       });
                     })()}
-                  </>
-                )}
-              </div>
+                  </div>
+                </>
+              )}
             </div>
           </div>
         </div>
