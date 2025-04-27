@@ -70,10 +70,14 @@ const CustomerDetailsForm = () => {
         throw new Error('Missing booking information');
       }
       
+      // Create a new Date object instead of using the selected date directly
+      // This ensures it's treated as a Date on the server
+      const dateObj = new Date(selectedDate.getTime());
+      
       const appointmentData = {
         serviceId: selectedService.id,
         barberId: selectedBarber.id,
-        date: selectedDate,
+        date: dateObj,
         time: selectedTime,
         timeOfDay: selectedTime.includes('AM') 
           ? 'morning' 
@@ -84,7 +88,7 @@ const CustomerDetailsForm = () => {
         lastName: formData.lastName,
         email: formData.email,
         phone: formData.phone,
-        notes: formData.notes || '',
+        notes: formData.notes || null,
         totalPrice: selectedService.price,
       };
       
