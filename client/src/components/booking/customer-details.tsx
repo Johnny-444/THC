@@ -87,7 +87,7 @@ const CustomerDetailsForm = () => {
         email: formData.email,
         phone: formData.phone,
         notes: formData.notes || null,
-        totalPrice: selectedService.price,
+        totalPrice: selectedService.price.toString(),
       };
       
       const res = await apiRequest('POST', '/api/appointments', appointmentData);
