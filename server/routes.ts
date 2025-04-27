@@ -4,6 +4,7 @@ import Stripe from "stripe";
 import { storage } from "./storage";
 import { insertAppointmentSchema, insertCartItemSchema } from "@shared/schema";
 import { z } from "zod";
+import { setupAuth } from "./auth";
 
 if (!process.env.STRIPE_SECRET_KEY) {
   console.warn('Warning: Missing STRIPE_SECRET_KEY. Stripe payment processing will not work.');
@@ -14,6 +15,8 @@ const stripe = process.env.STRIPE_SECRET_KEY
   : null;
 
 export async function registerRoutes(app: Express): Promise<Server> {
+  // Set up authentication
+  setupAuth(app);
   // Categories endpoints
   app.get("/api/categories", async (_req, res) => {
     try {
