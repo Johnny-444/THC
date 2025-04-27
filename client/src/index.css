@@ -1,0 +1,133 @@
+@import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;500;600;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --background: 0 0% 100%;
+  --foreground: 0 0% 7%;
+  --muted: 60 4.8% 95.9%;
+  --muted-foreground: 25 5.3% 44.7%;
+  --popover: 0 0% 100%;
+  --popover-foreground: 0 0% 7%;
+  --card: 0 0% 100%;
+  --card-foreground: 0 0% 7%;
+  --border: 20 5.9% 90%;
+  --input: 20 5.9% 90%;
+  --primary: 0 0% 7%; /* Black */
+  --primary-foreground: 0 0% 100%;
+  --secondary: 0 84% 43%; /* Red */
+  --secondary-foreground: 0 0% 100%;
+  --accent: 210 40% 96.1%;
+  --accent-foreground: 222.2 47.4% 11.2%;
+  --destructive: 0 84.2% 60.2%;
+  --destructive-foreground: 60 9.1% 97.8%;
+  --ring: 0 0% 7%;
+  --radius: 0.5rem;
+  
+  /* Chart colors */
+  --chart-1: 0 84% 43%;
+  --chart-2: 0 0% 7%;
+  --chart-3: 0 0% 45%;
+  --chart-4: 0 0% 75%;
+  --chart-5: 0 0% 95%;
+  
+  /* Sidebar colors */
+  --sidebar-background: 0 0% 7%;
+  --sidebar-foreground: 0 0% 98%;
+  --sidebar-primary: 0 84% 43%;
+  --sidebar-primary-foreground: 0 0% 100%;
+  --sidebar-accent: 0 0% 20%;
+  --sidebar-accent-foreground: 0 0% 98%;
+  --sidebar-border: 0 0% 20%;
+  --sidebar-ring: 0 0% 75%;
+}
+
+.dark {
+  --background: 0 0% 7%;
+  --foreground: 0 0% 98%;
+  --muted: 0 0% 15%;
+  --muted-foreground: 0 0% 65%;
+  --popover: 0 0% 7%;
+  --popover-foreground: 0 0% 98%;
+  --card: 0 0% 7%;
+  --card-foreground: 0 0% 98%;
+  --border: 0 0% 20%;
+  --input: 0 0% 20%;
+  --primary: 0 0% 98%; /* White */
+  --primary-foreground: 0 0% 7%;
+  --secondary: 0 84% 43%; /* Red */
+  --secondary-foreground: 0 0% 98%;
+  --accent: 0 0% 20%;
+  --accent-foreground: 0 0% 98%;
+  --destructive: 0 62.8% 30.6%;
+  --destructive-foreground: 0 0% 98%;
+  --ring: 0 0% 40%;
+  
+  /* Chart colors */
+  --chart-1: 0 84% 43%;
+  --chart-2: 0 0% 98%;
+  --chart-3: 0 0% 80%;
+  --chart-4: 0 0% 50%;
+  --chart-5: 0 0% 30%;
+  
+  /* Sidebar colors - unchanged in dark mode */
+  --sidebar-background: 0 0% 7%;
+  --sidebar-foreground: 0 0% 98%;
+  --sidebar-primary: 0 84% 43%;
+  --sidebar-primary-foreground: 0 0% 100%;
+  --sidebar-accent: 0 0% 20%;
+  --sidebar-accent-foreground: 0 0% 98%;
+  --sidebar-border: 0 0% 20%;
+  --sidebar-ring: 0 0% 75%;
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply font-sans antialiased bg-background text-foreground;
+  }
+  
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-heading;
+  }
+}
+
+@layer components {
+  .calendar-day {
+    @apply transition-all duration-200;
+  }
+  
+  .calendar-day:hover:not(.calendar-day-disabled) {
+    @apply bg-gray-100 scale-105;
+  }
+  
+  .service-card {
+    @apply transition-all duration-300;
+  }
+  
+  .service-card:hover {
+    @apply -translate-y-1 shadow-lg;
+  }
+  
+  .product-card {
+    @apply transition-all duration-300;
+  }
+  
+  .product-card:hover {
+    @apply -translate-y-1 shadow-lg;
+  }
+}
+
+.font-heading {
+  font-family: 'Bebas Neue', cursive;
+  letter-spacing: 0.05em;
+}
+
+.font-sans {
+  font-family: 'Inter', sans-serif;
+}
