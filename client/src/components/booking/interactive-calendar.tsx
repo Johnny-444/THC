@@ -309,7 +309,7 @@ const InteractiveCalendar = () => {
                     {format(day, 'd')}
                   </span>
                   {isToday(day) && (
-                    <div className="h-1 w-10 bg-green-500 rounded-full mt-1" />
+                    <div className="h-1 w-10 bg-secondary rounded-full mt-1 opacity-50" />
                   )}
                 </button>
               ))}
