@@ -70,12 +70,12 @@ const CustomerDetailsForm = () => {
         throw new Error('Missing booking information');
       }
       
-      // Prepare appointment data for submission
+      // Create a proper ISO string date for compatibility
       const appointmentData = {
         serviceId: selectedService.id,
         barberId: selectedBarber.id,
-        // Server will convert this to a Date via our schema preprocessing
-        date: selectedDate, 
+        // Convert date to ISO string for proper serialization in JSON
+        date: selectedDate.toISOString(),
         time: selectedTime,
         timeOfDay: selectedTime.includes('AM') 
           ? 'morning' 

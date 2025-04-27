@@ -130,19 +130,37 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.post("/api/appointments", async (req, res) => {
     try {
+      // Debug log
+      console.log("Appointment request body:", JSON.stringify(req.body));
+      
       // Pre-process the date field to ensure it's a Date object
       const rawData = req.body;
       
-      // Check if date is a string and convert it to a Date object
-      if (rawData.date && typeof rawData.date === 'string') {
-        rawData.date = new Date(rawData.date);
+      // Explicitly handle date conversion
+      if (rawData.date) {
+        if (typeof rawData.date === 'string') {
+          console.log("Converting string date to Date object:", rawData.date);
+          rawData.date = new Date(rawData.date);
+        } else if (rawData.date instanceof Date) {
+          console.log("Date is already a Date object");
+        } else {
+          console.log("Date is of unexpected type:", typeof rawData.date);
+        }
+      } else {
+        console.log("No date field found in request");
       }
       
+      console.log("Parsed date:", rawData.date);
+      
       const appointmentData = insertAppointmentSchema.parse(rawData);
+      console.log("After Zod validation:", JSON.stringify(appointmentData));
+      
       const appointment = await storage.createAppointment(appointmentData);
       res.status(201).json(appointment);
     } catch (error) {
+      console.error("Appointment creation error:", error);
       if (error instanceof z.ZodError) {
+        console.error("Zod validation errors:", JSON.stringify(error.errors));
         return res.status(400).json({ message: "Invalid appointment data", errors: error.errors });
       }
       res.status(500).json({ message: "Error creating appointment", details: error instanceof Error ? error.message : 'Unknown error' });

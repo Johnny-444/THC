@@ -98,6 +98,8 @@ export const insertAppointmentSchema = baseAppointmentSchema.extend({
     },
     z.date()
   ),
+  timeOfDay: z.enum(['morning', 'afternoon', 'evening']).nullish(),
+  notes: z.string().nullish(),
 });
 export const insertProductSchema = createInsertSchema(products);
 export const insertCartItemSchema = createInsertSchema(cartItems).omit({ id: true });
