@@ -16,7 +16,7 @@ import {
 } from '@/components/ui/tooltip';
 import { ArrowLeft, ArrowRight, Calendar as CalendarIcon, Clock, User, PlusCircle, Check, ChevronLeft, ChevronRight, X } from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Service, Barber } from '@shared/schema';
+import { Service, Barber, Category } from '@shared/schema';
 
 // Helper function to get time period (morning, afternoon, evening)
 const getTimePeriod = (time: string) => {
@@ -449,7 +449,7 @@ const InteractiveCalendar = () => {
       {/* Service selection modal */}
       {showServiceSelect && (
         <div className="fixed inset-0 bg-black/50 z-50 flex justify-center items-center">
-          <div className="bg-white rounded-lg w-full max-w-md max-h-[90vh] shadow-xl overflow-hidden">
+          <div className="bg-white rounded-lg w-full max-w-lg max-h-[90vh] shadow-xl overflow-hidden">
             <div className="p-4 border-b flex items-center justify-between">
               <div className="flex items-center">
                 <button 
@@ -468,23 +468,13 @@ const InteractiveCalendar = () => {
               </button>
             </div>
             
-            <div className="p-4 space-y-3 overflow-y-auto max-h-[60vh]">
-              {services?.map(service => (
-                <div 
-                  key={service.id}
-                  className="p-4 border rounded-lg cursor-pointer hover:border-[#2193b0] hover:bg-gray-50 transition-colors"
-                  onClick={() => addService(service)}
-                >
-                  <div className="flex justify-between items-center">
-                    <div>
-                      <h4 className="font-bold">{service.name}</h4>
-                      <p className="text-gray-500">{service.duration} min</p>
-                      <p className="text-sm text-gray-600 mt-1">{service.description}</p>
-                    </div>
-                    <span className="font-bold text-[#2193b0] whitespace-nowrap ml-4">${service.price}</span>
-                  </div>
-                </div>
-              ))}
+            <div className="p-4 overflow-y-auto max-h-[60vh]">
+              {/* Fetch categories and group services by category */}
+              <div className="space-y-6">
+                {services && (
+                  <CategorizedServices services={services} onServiceSelect={addService} />
+                )}
+              </div>
             </div>
           </div>
         </div>
@@ -542,6 +532,71 @@ const InteractiveCalendar = () => {
         </div>
       )}
     </div>
+  );
+};
+
+// Component to display services by category
+interface CategorizedServicesProps {
+  services: Service[];
+  onServiceSelect: (service: Service) => void;
+}
+
+const CategorizedServices: React.FC<CategorizedServicesProps> = ({ services, onServiceSelect }) => {
+  // Fetch categories
+  const { data: categories, isLoading } = useQuery<Category[]>({
+    queryKey: ['/api/categories/service'],
+  });
+  
+  if (isLoading || !categories) {
+    return (
+      <div className="flex justify-center py-4">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#2193b0]"></div>
+      </div>
+    );
+  }
+  
+  // Group services by category
+  const servicesByCategory: Record<number, Service[]> = {};
+  services.forEach(service => {
+    if (service.categoryId) {
+      if (!servicesByCategory[service.categoryId]) {
+        servicesByCategory[service.categoryId] = [];
+      }
+      servicesByCategory[service.categoryId].push(service);
+    }
+  });
+  
+  return (
+    <>
+      {categories.map(category => {
+        const categoryServices = servicesByCategory[category.id] || [];
+        if (categoryServices.length === 0) return null;
+        
+        return (
+          <div key={category.id} className="mb-4">
+            <h3 className="text-lg font-bold mb-2 pb-1 border-b">{category.name}</h3>
+            <div className="space-y-3">
+              {categoryServices.map(service => (
+                <div 
+                  key={service.id}
+                  className="p-4 border rounded-lg cursor-pointer hover:border-[#2193b0] hover:bg-gray-50 transition-colors"
+                  onClick={() => onServiceSelect(service)}
+                >
+                  <div className="flex justify-between items-start">
+                    <div>
+                      <h4 className="font-bold">{service.name}</h4>
+                      <p className="text-gray-500">{service.duration} min</p>
+                      <p className="text-sm text-gray-600 mt-1">{service.description}</p>
+                    </div>
+                    <span className="font-bold text-[#2193b0] whitespace-nowrap ml-4">${service.price}</span>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        );
+      })}
+    </>
   );
 };
 

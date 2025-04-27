@@ -337,19 +337,27 @@ export class MemStorage implements IStorage {
     const haircutCategory: Category = { id: this.categoryId++, name: 'Haircuts', type: 'service' };
     const beardCategory: Category = { id: this.categoryId++, name: 'Beard', type: 'service' };
     const packageCategory: Category = { id: this.categoryId++, name: 'Packages', type: 'service' };
+    const colorCategory: Category = { id: this.categoryId++, name: 'Color Services', type: 'service' };
+    const specialtyCategory: Category = { id: this.categoryId++, name: 'Specialty Services', type: 'service' };
+    const kidsCategory: Category = { id: this.categoryId++, name: 'Kids Services', type: 'service' };
     
     const stylingProductCategory: Category = { id: this.categoryId++, name: 'Styling Products', type: 'product' };
     const beardCareCategory: Category = { id: this.categoryId++, name: 'Beard Care', type: 'product' };
     const shavingCategory: Category = { id: this.categoryId++, name: 'Shaving', type: 'product' };
+    const hairCareCategory: Category = { id: this.categoryId++, name: 'Hair Care', type: 'product' };
     
     this.categories.set(haircutCategory.id, haircutCategory);
     this.categories.set(beardCategory.id, beardCategory);
     this.categories.set(packageCategory.id, packageCategory);
+    this.categories.set(colorCategory.id, colorCategory);
+    this.categories.set(specialtyCategory.id, specialtyCategory);
+    this.categories.set(kidsCategory.id, kidsCategory);
     this.categories.set(stylingProductCategory.id, stylingProductCategory);
     this.categories.set(beardCareCategory.id, beardCareCategory);
     this.categories.set(shavingCategory.id, shavingCategory);
+    this.categories.set(hairCareCategory.id, hairCareCategory);
     
-    // Create services
+    // Create services - Haircuts
     const classicHaircut: Service = { 
       id: this.serviceId++, 
       name: 'Classic Haircut', 
@@ -359,6 +367,34 @@ export class MemStorage implements IStorage {
       categoryId: haircutCategory.id
     };
     
+    const fadeHaircut: Service = { 
+      id: this.serviceId++, 
+      name: 'Fade Haircut', 
+      description: 'A modern haircut with a gradient effect from the top of the hair to the bottom.',
+      price: 40,
+      duration: 50,
+      categoryId: haircutCategory.id
+    };
+    
+    const buzzCut: Service = { 
+      id: this.serviceId++, 
+      name: 'Buzz Cut', 
+      description: 'A short, even-length haircut using electric clippers.',
+      price: 25,
+      duration: 30,
+      categoryId: haircutCategory.id
+    };
+    
+    const scissorCut: Service = { 
+      id: this.serviceId++, 
+      name: 'Scissor Cut', 
+      description: 'A precision cut using only scissors for a more textured finish.',
+      price: 45,
+      duration: 60,
+      categoryId: haircutCategory.id
+    };
+    
+    // Create services - Beard
     const beardTrim: Service = { 
       id: this.serviceId++, 
       name: 'Beard Trim', 
@@ -368,6 +404,25 @@ export class MemStorage implements IStorage {
       categoryId: beardCategory.id
     };
     
+    const beardShaping: Service = { 
+      id: this.serviceId++, 
+      name: 'Beard Shaping & Styling', 
+      description: 'Complete beard grooming with detailed shaping, conditioning, and styling.',
+      price: 35,
+      duration: 45,
+      categoryId: beardCategory.id
+    };
+    
+    const shave: Service = { 
+      id: this.serviceId++, 
+      name: 'Traditional Straight Razor Shave', 
+      description: 'Classic hot towel treatment and straight razor shave for the smoothest finish.',
+      price: 40,
+      duration: 45,
+      categoryId: beardCategory.id
+    };
+    
+    // Create services - Packages
     const fullService: Service = { 
       id: this.serviceId++, 
       name: 'Full Service', 
@@ -377,9 +432,88 @@ export class MemStorage implements IStorage {
       categoryId: packageCategory.id
     };
     
+    const executivePackage: Service = { 
+      id: this.serviceId++, 
+      name: 'Executive Package', 
+      description: 'Premium service with haircut, facial massage, hot towel treatment, and styling.',
+      price: 75,
+      duration: 90,
+      categoryId: packageCategory.id
+    };
+    
+    const groomPackage: Service = { 
+      id: this.serviceId++, 
+      name: 'Groom Package', 
+      description: 'Special occasion package with haircut, beard grooming, facial, and styling.',
+      price: 90,
+      duration: 120,
+      categoryId: packageCategory.id
+    };
+    
+    // Create services - Color
+    const grayBlending: Service = { 
+      id: this.serviceId++, 
+      name: 'Gray Blending', 
+      description: 'Subtle color service to reduce the appearance of gray hair without full coverage.',
+      price: 50,
+      duration: 60,
+      categoryId: colorCategory.id
+    };
+    
+    const colorService: Service = { 
+      id: this.serviceId++, 
+      name: 'Full Color Service', 
+      description: 'Complete color change or coverage with professional hair color products.',
+      price: 70,
+      duration: 90,
+      categoryId: colorCategory.id
+    };
+    
+    // Create services - Specialty
+    const hotTowelTreatment: Service = { 
+      id: this.serviceId++, 
+      name: 'Hot Towel Treatment', 
+      description: 'Relaxing hot towel facial treatment to cleanse and rejuvenate the skin.',
+      price: 30,
+      duration: 30,
+      categoryId: specialtyCategory.id
+    };
+    
+    const facialTreatment: Service = { 
+      id: this.serviceId++, 
+      name: 'Facial Treatment', 
+      description: 'Deep cleansing facial with premium skincare products and massage.',
+      price: 45,
+      duration: 45,
+      categoryId: specialtyCategory.id
+    };
+    
+    // Create services - Kids
+    const kidsHaircut: Service = { 
+      id: this.serviceId++, 
+      name: 'Kids Haircut (12 & Under)', 
+      description: 'Haircut service specially designed for children with extra care and patience.',
+      price: 25,
+      duration: 30,
+      categoryId: kidsCategory.id
+    };
+    
+    // Add all services to the map
     this.services.set(classicHaircut.id, classicHaircut);
+    this.services.set(fadeHaircut.id, fadeHaircut);
+    this.services.set(buzzCut.id, buzzCut);
+    this.services.set(scissorCut.id, scissorCut);
     this.services.set(beardTrim.id, beardTrim);
+    this.services.set(beardShaping.id, beardShaping);
+    this.services.set(shave.id, shave);
     this.services.set(fullService.id, fullService);
+    this.services.set(executivePackage.id, executivePackage);
+    this.services.set(groomPackage.id, groomPackage);
+    this.services.set(grayBlending.id, grayBlending);
+    this.services.set(colorService.id, colorService);
+    this.services.set(hotTowelTreatment.id, hotTowelTreatment);
+    this.services.set(facialTreatment.id, facialTreatment);
+    this.services.set(kidsHaircut.id, kidsHaircut);
     
     // Create barbers
     const mikeJohnson: Barber = {
@@ -398,8 +532,35 @@ export class MemStorage implements IStorage {
       rating: 4.5
     };
     
+    const sarahDavis: Barber = {
+      id: this.barberId++,
+      name: 'Sarah Davis',
+      title: 'Style Specialist',
+      imageUrl: 'https://images.unsplash.com/photo-1595123550441-d377e017de6a?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=500&q=80',
+      rating: 4.8
+    };
+    
+    const jamesWilson: Barber = {
+      id: this.barberId++,
+      name: 'James Wilson',
+      title: 'Color Specialist',
+      imageUrl: 'https://images.unsplash.com/photo-1612837017391-52b4eeea2977?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=500&q=80',
+      rating: 4.7
+    };
+    
+    const davidLee: Barber = {
+      id: this.barberId++,
+      name: 'David Lee',
+      title: 'Junior Barber',
+      imageUrl: 'https://images.unsplash.com/photo-1578176603894-57973e38890f?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=500&q=80',
+      rating: 4.2
+    };
+    
     this.barbers.set(mikeJohnson.id, mikeJohnson);
     this.barbers.set(alexRodriguez.id, alexRodriguez);
+    this.barbers.set(sarahDavis.id, sarahDavis);
+    this.barbers.set(jamesWilson.id, jamesWilson);
+    this.barbers.set(davidLee.id, davidLee);
     
     // Create products
     const stylingPomade: Product = {
