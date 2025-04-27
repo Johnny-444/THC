@@ -150,334 +150,394 @@ const InteractiveCalendar = () => {
   };
   
   return (
-    <div className="relative bg-white rounded-lg shadow-lg max-w-4xl mx-auto z-10">
-      {/* Modal header with month/year and close button */}
+    <div className="relative bg-white rounded-lg shadow-lg max-w-6xl mx-auto z-10">
+      {/* Modal header */}
       <div className="flex justify-between items-center p-5 border-b">
-        <h2 className="text-xl font-bold">{getMonthYearDisplay()}</h2>
+        <h2 className="text-xl font-bold">Book an Appointment</h2>
         <button className="p-1 rounded-full hover:bg-gray-100">
           <X className="h-5 w-5" />
         </button>
       </div>
       
-      {/* Calendar days row */}
-      <div className="p-4 border-b">
-        <div className="flex items-center justify-between mb-4">
-          <button 
-            onClick={() => navigateWeek('prev')} 
-            className="p-1 rounded-full hover:bg-gray-100"
-          >
-            <ChevronLeft className="h-5 w-5" />
-          </button>
-          
-          <div className="flex space-x-2 overflow-x-auto">
-            {weekDays.map((day, index) => (
-              <button
-                key={index}
-                className={`flex flex-col items-center justify-center min-w-[70px] p-3 rounded-lg transition-all ${
-                  selectedDay && isSameDay(day, selectedDay)
-                    ? 'bg-[#2193b0] text-white'
-                    : 'hover:bg-gray-100'
-                } ${
-                  // Disable past days
-                  isBefore(day, new Date()) && !isToday(day)
-                    ? 'opacity-50 cursor-not-allowed'
-                    : 'cursor-pointer'
-                }`}
-                onClick={() => !isBefore(day, new Date()) && handleDaySelect(day)}
-                disabled={isBefore(day, new Date()) && !isToday(day)}
+      {/* 8-hour advance booking notice */}
+      <div className="mx-5 mt-3 mb-0 text-center text-sm text-gray-500 bg-gray-100 p-2 rounded">
+        <p>Please note: Appointments must be booked at least 8 hours in advance.</p>
+      </div>
+      
+      {/* Two-column layout */}
+      <div className="flex flex-col md:flex-row">
+        {/* Left Column - Service & Barber Selection */}
+        <div className="p-5 md:w-1/3 md:border-r">
+          <div className="mb-6">
+            <h3 className="text-lg font-bold mb-4">1. Select a Service</h3>
+            {selectedServices.length > 0 ? (
+              <div className="mb-4 p-4 bg-gray-50 rounded-lg flex justify-between items-center">
+                <div>
+                  <h3 className="font-bold">{selectedService?.name}</h3>
+                  <p className="text-[#2193b0]">${selectedService?.price}</p>
+                </div>
+                <button 
+                  className="text-[#2193b0]"
+                  onClick={() => setShowServiceSelect(true)}
+                >
+                  Change
+                </button>
+              </div>
+            ) : (
+              <Button 
+                variant="outline" 
+                className="w-full flex justify-between items-center border-dashed border-2 p-4 h-auto"
+                onClick={() => setShowServiceSelect(true)}
               >
-                <span className="text-sm font-medium">
-                  {format(day, 'EEE')}
-                </span>
-                <span className="text-lg font-bold my-1">
-                  {format(day, 'd')}
-                </span>
-                {isToday(day) && (
-                  <div className="h-1 w-10 bg-green-500 rounded-full mt-1" />
-                )}
+                <span>Select a service</span>
+                <PlusCircle className="h-5 w-5" />
+              </Button>
+            )}
+          </div>
+          
+          <div className="mb-6">
+            <h3 className="text-lg font-bold mb-4">2. Select a Barber</h3>
+            {selectedBarber ? (
+              <div className="p-4 bg-gray-50 rounded-lg flex justify-between items-center">
+                <div className="flex items-center">
+                  <Avatar className="h-10 w-10 mr-3">
+                    <AvatarImage src={selectedBarber.imageUrl || ""} alt={selectedBarber.name} />
+                    <AvatarFallback>{selectedBarber.name.charAt(0)}</AvatarFallback>
+                  </Avatar>
+                  <div>
+                    <h3 className="font-bold">{selectedBarber.name}</h3>
+                    <p className="text-gray-600">{selectedBarber.title}</p>
+                  </div>
+                </div>
+                <button 
+                  className="text-[#2193b0]"
+                  onClick={() => setShowBarberSelect(true)}
+                >
+                  Change
+                </button>
+              </div>
+            ) : (
+              <Button 
+                variant="outline" 
+                className="w-full flex justify-between items-center border-dashed border-2 p-4 h-auto"
+                onClick={() => setShowBarberSelect(true)}
+              >
+                <span>Select a barber</span>
+                <PlusCircle className="h-5 w-5" />
+              </Button>
+            )}
+          </div>
+          
+          {/* Add another service link */}
+          {selectedService && (
+            <div className="mb-6">
+              <button 
+                className="flex items-center text-[#2193b0] font-medium"
+                onClick={() => setShowServiceSelect(true)}
+              >
+                <PlusCircle className="h-5 w-5 mr-2" />
+                Add another service
               </button>
-            ))}
-          </div>
+            </div>
+          )}
           
-          <button 
-            onClick={() => navigateWeek('next')} 
-            className="p-1 rounded-full hover:bg-gray-100"
-          >
-            <ChevronRight className="h-5 w-5" />
-          </button>
-        </div>
-        
-        {/* 8-hour advance booking notice */}
-        <div className="mt-2 text-center text-sm text-gray-500 bg-gray-100 p-2 rounded">
-          <p>Please note: Appointments must be booked at least 8 hours in advance.</p>
-        </div>
-      </div>
-      
-      {/* Time period tabs */}
-      <div className="border-b">
-        <Tabs 
-          defaultValue="morning" 
-          onValueChange={(value) => setTimePeriod(value as 'morning' | 'afternoon' | 'evening')}
-        >
-          <TabsList className="grid grid-cols-3 rounded-none border-0">
-            <TabsTrigger 
-              value="morning" 
-              className="data-[state=active]:bg-transparent data-[state=active]:border-b-2 data-[state=active]:border-[#2193b0] data-[state=active]:shadow-none rounded-none"
-            >
-              Morning
-            </TabsTrigger>
-            <TabsTrigger 
-              value="afternoon" 
-              className="data-[state=active]:bg-transparent data-[state=active]:border-b-2 data-[state=active]:border-[#2193b0] data-[state=active]:shadow-none rounded-none"
-            >
-              Afternoon
-            </TabsTrigger>
-            <TabsTrigger 
-              value="evening" 
-              className="data-[state=active]:bg-transparent data-[state=active]:border-b-2 data-[state=active]:border-[#2193b0] data-[state=active]:shadow-none rounded-none"
-            >
-              Evening
-            </TabsTrigger>
-          </TabsList>
-          
-          {/* Time slots */}
-          <div className="p-4">
-            <TabsContent value="morning" className="m-0">
-              <div className="flex flex-wrap gap-2">
-                {filteredTimes.length > 0 ? (
-                  filteredTimes.map((time) => (
-                    <Button
-                      key={time}
-                      variant="outline"
-                      className={`rounded-md border ${
-                        selectedTime === time 
-                          ? 'bg-[#2193b0] text-white border-[#2193b0]' 
-                          : 'border-gray-300'
-                      }`}
-                      onClick={() => handleTimeSelect(time)}
-                    >
-                      {time}
-                    </Button>
-                  ))
-                ) : (
-                  <p className="text-gray-500 w-full text-center py-4">
-                    No available time slots in the morning
-                  </p>
-                )}
-              </div>
-            </TabsContent>
-            
-            <TabsContent value="afternoon" className="m-0">
-              <div className="flex flex-wrap gap-2">
-                {filteredTimes.length > 0 ? (
-                  filteredTimes.map((time) => (
-                    <Button
-                      key={time}
-                      variant="outline"
-                      className={`rounded-md border ${
-                        selectedTime === time 
-                          ? 'bg-[#2193b0] text-white border-[#2193b0]' 
-                          : 'border-gray-300'
-                      }`}
-                      onClick={() => handleTimeSelect(time)}
-                    >
-                      {time}
-                    </Button>
-                  ))
-                ) : (
-                  <p className="text-gray-500 w-full text-center py-4">
-                    No available time slots in the afternoon
-                  </p>
-                )}
-              </div>
-            </TabsContent>
-            
-            <TabsContent value="evening" className="m-0">
-              <div className="flex flex-wrap gap-2">
-                {filteredTimes.length > 0 ? (
-                  filteredTimes.map((time) => (
-                    <Button
-                      key={time}
-                      variant="outline"
-                      className={`rounded-md border ${
-                        selectedTime === time 
-                          ? 'bg-[#2193b0] text-white border-[#2193b0]' 
-                          : 'border-gray-300'
-                      }`}
-                      onClick={() => handleTimeSelect(time)}
-                    >
-                      {time}
-                    </Button>
-                  ))
-                ) : (
-                  <p className="text-gray-500 w-full text-center py-4">
-                    No available time slots in the evening
-                  </p>
-                )}
-              </div>
-            </TabsContent>
-          </div>
-        </Tabs>
-      </div>
-      
-      {/* Selected service & barber summary */}
-      <div className="p-4 border-b">
-        {/* Service section */}
-        {selectedServices.length > 0 ? (
-          <div className="mb-4 p-4 bg-gray-50 rounded-lg flex justify-between items-center">
+          {/* Total section */}
+          <div className="p-4 bg-gray-50 rounded-lg mb-4 flex justify-between items-center">
             <div>
-              <h3 className="font-bold">{selectedService?.name}</h3>
-              <p className="text-gray-600">{selectedTime && selectedDate ? `${format(selectedDate, 'MMM d, yyyy')} · ${selectedTime} - ${selectedTime.split(':')[0] === '11' ? '12:00 PM' : `${parseInt(selectedTime.split(':')[0]) + 1}:00 ${selectedTime.includes('AM') ? 'AM' : 'PM'}`}` : 'No time selected'}</p>
-              <p className="text-[#2193b0]">${selectedService?.price}</p>
+              <span className="font-bold text-lg">Total:</span>
+              {selectedService && <span className="text-gray-500 ml-2 text-sm">{selectedService.duration}min</span>}
             </div>
-            <button 
-              className="text-[#2193b0]"
-              onClick={() => setShowServiceSelect(true)}
-            >
-              Change
-            </button>
+            <span className="font-bold text-xl">${selectedService?.price || "0.00"}</span>
           </div>
-        ) : (
-          <div className="mb-4">
-            <Button 
-              variant="outline" 
-              className="w-full flex justify-between items-center border-dashed border-2 p-4 h-auto"
-              onClick={() => setShowServiceSelect(true)}
-            >
-              <span>Add a service</span>
-              <PlusCircle className="h-5 w-5" />
-            </Button>
-          </div>
-        )}
+        </div>
         
-        {/* Barber section */}
-        {selectedBarber ? (
-          <div className="p-4 bg-gray-50 rounded-lg flex justify-between items-center">
-            <div className="flex items-center">
-              <Avatar className="h-10 w-10 mr-3">
-                <AvatarImage src={selectedBarber.imageUrl || ""} alt={selectedBarber.name} />
-                <AvatarFallback>{selectedBarber.name.charAt(0)}</AvatarFallback>
-              </Avatar>
-              <div>
-                <h3 className="font-bold">Staff: {selectedBarber.name}</h3>
-                <p className="text-gray-600">{selectedBarber.title}</p>
-              </div>
+        {/* Right Column - Calendar & Time Selection */}
+        <div className="p-5 md:w-2/3">
+          <h3 className="text-lg font-bold mb-4">3. Select Date & Time</h3>
+          
+          {/* Calendar header with month/year and navigation */}
+          <div className="p-2 border-b mb-4">
+            <div className="flex items-center justify-between mb-2">
+              <button 
+                onClick={() => navigateWeek('prev')} 
+                className="p-1 rounded-full hover:bg-gray-100"
+              >
+                <ChevronLeft className="h-5 w-5" />
+              </button>
+              
+              <h4 className="text-lg font-medium">{getMonthYearDisplay()}</h4>
+              
+              <button 
+                onClick={() => navigateWeek('next')} 
+                className="p-1 rounded-full hover:bg-gray-100"
+              >
+                <ChevronRight className="h-5 w-5" />
+              </button>
             </div>
-            <button 
-              className="text-[#2193b0]"
-              onClick={() => setShowBarberSelect(true)}
-            >
-              Change
-            </button>
           </div>
-        ) : (
-          <Button 
-            variant="outline" 
-            className="w-full flex justify-between items-center border-dashed border-2 p-4 h-auto"
-            onClick={() => setShowBarberSelect(true)}
-          >
-            <span>Select staff</span>
-            <PlusCircle className="h-5 w-5" />
-          </Button>
-        )}
-      </div>
-      
-      {/* Add another service link */}
-      {selectedService && (
-        <div className="p-4 border-b">
-          <button 
-            className="flex items-center text-[#2193b0] font-medium"
-            onClick={() => setShowServiceSelect(true)}
-          >
-            <PlusCircle className="h-5 w-5 mr-2" />
-            Add another service
-          </button>
+          
+          {/* Calendar days row */}
+          <div className="mb-6">
+            <div className="flex space-x-2 overflow-x-auto md:justify-center">
+              {weekDays.map((day, index) => (
+                <button
+                  key={index}
+                  className={`flex flex-col items-center justify-center min-w-[70px] p-3 rounded-lg transition-all ${
+                    selectedDay && isSameDay(day, selectedDay)
+                      ? 'bg-[#2193b0] text-white'
+                      : 'hover:bg-gray-100'
+                  } ${
+                    // Disable past days
+                    isBefore(day, new Date()) && !isToday(day)
+                      ? 'opacity-50 cursor-not-allowed'
+                      : 'cursor-pointer'
+                  }`}
+                  onClick={() => !isBefore(day, new Date()) && handleDaySelect(day)}
+                  disabled={isBefore(day, new Date()) && !isToday(day)}
+                >
+                  <span className="text-sm font-medium">
+                    {format(day, 'EEE')}
+                  </span>
+                  <span className="text-lg font-bold my-1">
+                    {format(day, 'd')}
+                  </span>
+                  {isToday(day) && (
+                    <div className="h-1 w-10 bg-green-500 rounded-full mt-1" />
+                  )}
+                </button>
+              ))}
+            </div>
+          </div>
+          
+          {/* Time period tabs */}
+          <div className="border rounded-lg">
+            <Tabs 
+              defaultValue="morning" 
+              onValueChange={(value) => setTimePeriod(value as 'morning' | 'afternoon' | 'evening')}
+            >
+              <TabsList className="grid grid-cols-3 rounded-none border-0">
+                <TabsTrigger 
+                  value="morning" 
+                  className="data-[state=active]:bg-transparent data-[state=active]:border-b-2 data-[state=active]:border-[#2193b0] data-[state=active]:shadow-none rounded-none"
+                >
+                  Morning
+                </TabsTrigger>
+                <TabsTrigger 
+                  value="afternoon" 
+                  className="data-[state=active]:bg-transparent data-[state=active]:border-b-2 data-[state=active]:border-[#2193b0] data-[state=active]:shadow-none rounded-none"
+                >
+                  Afternoon
+                </TabsTrigger>
+                <TabsTrigger 
+                  value="evening" 
+                  className="data-[state=active]:bg-transparent data-[state=active]:border-b-2 data-[state=active]:border-[#2193b0] data-[state=active]:shadow-none rounded-none"
+                >
+                  Evening
+                </TabsTrigger>
+              </TabsList>
+              
+              {/* Time slots */}
+              <div className="p-4">
+                {selectedService && selectedBarber ? (
+                  <>
+                    <TabsContent value="morning" className="m-0">
+                      <div className="flex flex-wrap gap-2">
+                        {filteredTimes.length > 0 ? (
+                          filteredTimes.map((time) => (
+                            <Button
+                              key={time}
+                              variant="outline"
+                              className={`rounded-md border ${
+                                selectedTime === time 
+                                  ? 'bg-[#2193b0] text-white border-[#2193b0]' 
+                                  : 'border-gray-300'
+                              }`}
+                              onClick={() => handleTimeSelect(time)}
+                            >
+                              {time}
+                            </Button>
+                          ))
+                        ) : (
+                          <p className="text-gray-500 w-full text-center py-4">
+                            No available time slots in the morning
+                          </p>
+                        )}
+                      </div>
+                    </TabsContent>
+                    
+                    <TabsContent value="afternoon" className="m-0">
+                      <div className="flex flex-wrap gap-2">
+                        {filteredTimes.length > 0 ? (
+                          filteredTimes.map((time) => (
+                            <Button
+                              key={time}
+                              variant="outline"
+                              className={`rounded-md border ${
+                                selectedTime === time 
+                                  ? 'bg-[#2193b0] text-white border-[#2193b0]' 
+                                  : 'border-gray-300'
+                              }`}
+                              onClick={() => handleTimeSelect(time)}
+                            >
+                              {time}
+                            </Button>
+                          ))
+                        ) : (
+                          <p className="text-gray-500 w-full text-center py-4">
+                            No available time slots in the afternoon
+                          </p>
+                        )}
+                      </div>
+                    </TabsContent>
+                    
+                    <TabsContent value="evening" className="m-0">
+                      <div className="flex flex-wrap gap-2">
+                        {filteredTimes.length > 0 ? (
+                          filteredTimes.map((time) => (
+                            <Button
+                              key={time}
+                              variant="outline"
+                              className={`rounded-md border ${
+                                selectedTime === time 
+                                  ? 'bg-[#2193b0] text-white border-[#2193b0]' 
+                                  : 'border-gray-300'
+                              }`}
+                              onClick={() => handleTimeSelect(time)}
+                            >
+                              {time}
+                            </Button>
+                          ))
+                        ) : (
+                          <p className="text-gray-500 w-full text-center py-4">
+                            No available time slots in the evening
+                          </p>
+                        )}
+                      </div>
+                    </TabsContent>
+                  </>
+                ) : (
+                  <div className="text-center py-6 text-gray-500">
+                    Please select a service and barber first to see available time slots.
+                  </div>
+                )}
+              </div>
+            </Tabs>
+          </div>
+          
+          {/* Selected time summary */}
+          {selectedTime && selectedDate && (
+            <div className="mt-4 p-3 bg-gray-50 rounded-lg">
+              <p className="text-center font-medium">
+                Selected: {format(selectedDate, 'MMM d, yyyy')} at {selectedTime}
+              </p>
+            </div>
+          )}
         </div>
-      )}
-      
-      {/* Total section */}
-      <div className="p-4 border-b flex justify-between items-center">
-        <div>
-          <span className="font-bold text-lg">Total:</span>
-          <span className="text-gray-500 ml-2 text-sm">1h</span>
-        </div>
-        <span className="font-bold text-xl">${selectedService?.price || "0.00"}</span>
       </div>
       
       {/* Continue button */}
-      <div className="p-4">
+      <div className="p-4 border-t mt-4">
         <Button 
           className="w-full bg-[#2193b0] hover:bg-[#1c7c94]"
           disabled={!canProceed}
           onClick={goToNextStep}
         >
-          Continue
+          Continue to Customer Details
         </Button>
       </div>
       
       {/* Service selection modal */}
       {showServiceSelect && (
-        <div className="absolute inset-0 bg-white z-20 overflow-y-auto">
-          <div className="p-4 border-b flex items-center">
-            <button 
-              className="mr-4"
-              onClick={() => setShowServiceSelect(false)}
-            >
-              <ArrowLeft className="h-5 w-5" />
-            </button>
-            <h3 className="text-lg font-bold">Select a Service</h3>
-          </div>
-          
-          <div className="p-4 space-y-3">
-            {services?.map(service => (
-              <div 
-                key={service.id}
-                className="p-4 border rounded-lg cursor-pointer hover:border-[#2193b0]"
-                onClick={() => addService(service)}
-              >
-                <div className="flex justify-between items-center">
-                  <div>
-                    <h4 className="font-bold">{service.name}</h4>
-                    <p className="text-gray-500">{service.duration} min</p>
-                  </div>
-                  <span className="font-bold">${service.price}</span>
-                </div>
+        <div className="fixed inset-0 bg-black/50 z-50 flex justify-center items-center">
+          <div className="bg-white rounded-lg w-full max-w-md max-h-[90vh] shadow-xl overflow-hidden">
+            <div className="p-4 border-b flex items-center justify-between">
+              <div className="flex items-center">
+                <button 
+                  className="mr-4"
+                  onClick={() => setShowServiceSelect(false)}
+                >
+                  <ArrowLeft className="h-5 w-5" />
+                </button>
+                <h3 className="text-lg font-bold">Select a Service</h3>
               </div>
-            ))}
+              <button
+                onClick={() => setShowServiceSelect(false)}
+                className="p-1 rounded-full hover:bg-gray-100"
+              >
+                <X className="h-5 w-5" />
+              </button>
+            </div>
+            
+            <div className="p-4 space-y-3 overflow-y-auto max-h-[60vh]">
+              {services?.map(service => (
+                <div 
+                  key={service.id}
+                  className="p-4 border rounded-lg cursor-pointer hover:border-[#2193b0] hover:bg-gray-50 transition-colors"
+                  onClick={() => addService(service)}
+                >
+                  <div className="flex justify-between items-center">
+                    <div>
+                      <h4 className="font-bold">{service.name}</h4>
+                      <p className="text-gray-500">{service.duration} min</p>
+                      <p className="text-sm text-gray-600 mt-1">{service.description}</p>
+                    </div>
+                    <span className="font-bold text-[#2193b0] whitespace-nowrap ml-4">${service.price}</span>
+                  </div>
+                </div>
+              ))}
+            </div>
           </div>
         </div>
       )}
       
       {/* Barber selection modal */}
       {showBarberSelect && (
-        <div className="absolute inset-0 bg-white z-20 overflow-y-auto">
-          <div className="p-4 border-b flex items-center">
-            <button 
-              className="mr-4"
-              onClick={() => setShowBarberSelect(false)}
-            >
-              <ArrowLeft className="h-5 w-5" />
-            </button>
-            <h3 className="text-lg font-bold">Select Staff</h3>
-          </div>
-          
-          <div className="p-4 space-y-3">
-            {barbers?.map(barber => (
-              <div 
-                key={barber.id}
-                className="p-4 border rounded-lg cursor-pointer hover:border-[#2193b0] flex items-center"
-                onClick={() => selectBarber(barber)}
-              >
-                <Avatar className="h-12 w-12 mr-4">
-                  <AvatarImage src={barber.imageUrl || ""} alt={barber.name} />
-                  <AvatarFallback>{barber.name.charAt(0)}</AvatarFallback>
-                </Avatar>
-                <div>
-                  <h4 className="font-bold">{barber.name}</h4>
-                  <p className="text-gray-500">{barber.title}</p>
-                </div>
+        <div className="fixed inset-0 bg-black/50 z-50 flex justify-center items-center">
+          <div className="bg-white rounded-lg w-full max-w-md max-h-[90vh] shadow-xl overflow-hidden">
+            <div className="p-4 border-b flex items-center justify-between">
+              <div className="flex items-center">
+                <button 
+                  className="mr-4"
+                  onClick={() => setShowBarberSelect(false)}
+                >
+                  <ArrowLeft className="h-5 w-5" />
+                </button>
+                <h3 className="text-lg font-bold">Select a Barber</h3>
               </div>
-            ))}
+              <button
+                onClick={() => setShowBarberSelect(false)}
+                className="p-1 rounded-full hover:bg-gray-100"
+              >
+                <X className="h-5 w-5" />
+              </button>
+            </div>
+            
+            <div className="p-4 space-y-3 overflow-y-auto max-h-[60vh]">
+              {barbers?.map(barber => (
+                <div 
+                  key={barber.id}
+                  className="p-4 border rounded-lg cursor-pointer hover:border-[#2193b0] hover:bg-gray-50 transition-colors"
+                  onClick={() => selectBarber(barber)}
+                >
+                  <div className="flex items-center">
+                    <Avatar className="h-16 w-16 mr-4">
+                      <AvatarImage src={barber.imageUrl || ""} alt={barber.name} />
+                      <AvatarFallback>{barber.name.charAt(0)}</AvatarFallback>
+                    </Avatar>
+                    <div>
+                      <h4 className="font-bold text-lg">{barber.name}</h4>
+                      <p className="text-gray-700">{barber.title}</p>
+                      <div className="flex items-center mt-1">
+                        {Array.from({ length: Math.floor(Number(barber.rating)) }).map((_, i) => (
+                          <div key={i} className="text-yellow-500">★</div>
+                        ))}
+                        {Number(barber.rating) % 1 > 0 && <div className="text-yellow-500">½</div>}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
           </div>
         </div>
       )}
