@@ -472,7 +472,60 @@ const InteractiveCalendar = () => {
               {/* Fetch categories and group services by category */}
               <div className="space-y-6">
                 {services && (
-                  <CategorizedServices services={services} onServiceSelect={addService} />
+                  <>
+                    {/* Group services by category */}
+                    {(() => {
+                      // Group services by category
+                      const servicesByCategory: {[key: number]: Service[]} = {};
+                      const categoryNames: {[key: number]: string} = {
+                        1: 'Haircuts',
+                        2: 'Beard',
+                        3: 'Packages', 
+                        4: 'Color Services',
+                        5: 'Specialty Services',
+                        6: 'Kids Services'
+                      };
+                      
+                      services.forEach(service => {
+                        if (service.categoryId !== null && service.categoryId !== undefined) {
+                          if (!servicesByCategory[service.categoryId]) {
+                            servicesByCategory[service.categoryId] = [];
+                          }
+                          servicesByCategory[service.categoryId].push(service);
+                        }
+                      });
+                      
+                      return Object.keys(servicesByCategory).map(categoryId => {
+                        const id = parseInt(categoryId);
+                        const categoryServices = servicesByCategory[id];
+                        const categoryName = categoryNames[id] || `Category ${id}`;
+                        
+                        return (
+                          <div key={categoryId} className="mb-4">
+                            <h3 className="text-lg font-bold mb-2 pb-1 border-b">{categoryName}</h3>
+                            <div className="space-y-3">
+                              {categoryServices.map(service => (
+                                <div 
+                                  key={service.id}
+                                  className="p-4 border rounded-lg cursor-pointer hover:border-[#2193b0] hover:bg-gray-50 transition-colors"
+                                  onClick={() => addService(service)}
+                                >
+                                  <div className="flex justify-between items-start">
+                                    <div>
+                                      <h4 className="font-bold">{service.name}</h4>
+                                      <p className="text-gray-500">{service.duration} min</p>
+                                      <p className="text-sm text-gray-600 mt-1">{service.description}</p>
+                                    </div>
+                                    <span className="font-bold text-[#2193b0] whitespace-nowrap ml-4">${service.price}</span>
+                                  </div>
+                                </div>
+                              ))}
+                            </div>
+                          </div>
+                        );
+                      });
+                    })()}
+                  </>
                 )}
               </div>
             </div>
@@ -535,69 +588,6 @@ const InteractiveCalendar = () => {
   );
 };
 
-// Component to display services by category
-interface CategorizedServicesProps {
-  services: Service[];
-  onServiceSelect: (service: Service) => void;
-}
 
-const CategorizedServices: React.FC<CategorizedServicesProps> = ({ services, onServiceSelect }) => {
-  // Fetch categories
-  const { data: categories, isLoading } = useQuery<Category[]>({
-    queryKey: ['/api/categories/service'],
-  });
-  
-  if (isLoading || !categories) {
-    return (
-      <div className="flex justify-center py-4">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#2193b0]"></div>
-      </div>
-    );
-  }
-  
-  // Group services by category
-  const servicesByCategory: Record<number, Service[]> = {};
-  services.forEach(service => {
-    if (service.categoryId) {
-      if (!servicesByCategory[service.categoryId]) {
-        servicesByCategory[service.categoryId] = [];
-      }
-      servicesByCategory[service.categoryId].push(service);
-    }
-  });
-  
-  return (
-    <>
-      {categories.map(category => {
-        const categoryServices = servicesByCategory[category.id] || [];
-        if (categoryServices.length === 0) return null;
-        
-        return (
-          <div key={category.id} className="mb-4">
-            <h3 className="text-lg font-bold mb-2 pb-1 border-b">{category.name}</h3>
-            <div className="space-y-3">
-              {categoryServices.map(service => (
-                <div 
-                  key={service.id}
-                  className="p-4 border rounded-lg cursor-pointer hover:border-[#2193b0] hover:bg-gray-50 transition-colors"
-                  onClick={() => onServiceSelect(service)}
-                >
-                  <div className="flex justify-between items-start">
-                    <div>
-                      <h4 className="font-bold">{service.name}</h4>
-                      <p className="text-gray-500">{service.duration} min</p>
-                      <p className="text-sm text-gray-600 mt-1">{service.description}</p>
-                    </div>
-                    <span className="font-bold text-[#2193b0] whitespace-nowrap ml-4">${service.price}</span>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        );
-      })}
-    </>
-  );
-};
 
 export default InteractiveCalendar;
