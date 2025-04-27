@@ -181,10 +181,10 @@ const InteractiveCalendar = () => {
               <div className="mb-4 p-4 bg-gray-50 rounded-lg flex justify-between items-center">
                 <div>
                   <h3 className="font-bold">{selectedService?.name}</h3>
-                  <p className="text-[#2193b0]">${selectedService?.price}</p>
+                  <p className="text-secondary">${selectedService?.price}</p>
                 </div>
                 <button 
-                  className="text-[#2193b0]"
+                  className="text-secondary"
                   onClick={openServiceSelection}
                 >
                   Change
@@ -217,7 +217,7 @@ const InteractiveCalendar = () => {
                   </div>
                 </div>
                 <button 
-                  className="text-[#2193b0]"
+                  className="text-secondary"
                   onClick={() => setShowBarberSelect(true)}
                 >
                   Change
@@ -239,7 +239,7 @@ const InteractiveCalendar = () => {
           {selectedService && (
             <div className="mb-6">
               <button 
-                className="flex items-center text-[#2193b0] font-medium"
+                className="flex items-center text-secondary font-medium"
                 onClick={openServiceSelection}
               >
                 <PlusCircle className="h-5 w-5 mr-2" />
@@ -484,7 +484,7 @@ const InteractiveCalendar = () => {
                     <div className="flex overflow-x-auto pb-2 gap-1" style={{ scrollbarWidth: 'none' }}>
                       <button 
                         className={`px-3 py-1.5 rounded-full text-sm font-medium whitespace-nowrap transition-colors
-                          ${selectedCategoryId === null ? 'bg-[#2193b0] text-white' : 'bg-gray-100 hover:bg-gray-200'}`}
+                          ${selectedCategoryId === null ? 'bg-secondary text-white' : 'bg-gray-100 hover:bg-gray-200'}`}
                         onClick={() => setSelectedCategoryId(null)}
                       >
                         All Services
@@ -511,7 +511,7 @@ const InteractiveCalendar = () => {
                           <button 
                             key={categoryId}
                             className={`px-3 py-1.5 rounded-full text-sm font-medium whitespace-nowrap transition-colors
-                              ${selectedCategoryId === categoryId ? 'bg-[#2193b0] text-white' : 'bg-gray-100 hover:bg-gray-200'}`}
+                              ${selectedCategoryId === categoryId ? 'bg-secondary text-white' : 'bg-gray-100 hover:bg-gray-200'}`}
                             onClick={() => setSelectedCategoryId(categoryId)}
                           >
                             {categoryNames[categoryId] || `Category ${categoryId}`}
@@ -556,7 +556,7 @@ const InteractiveCalendar = () => {
                                     <p className="text-gray-500">{service.duration} min</p>
                                     <p className="text-sm text-gray-600 mt-1">{service.description}</p>
                                   </div>
-                                  <span className="font-bold text-[#2193b0] whitespace-nowrap ml-4">${service.price}</span>
+                                  <span className="font-bold text-secondary whitespace-nowrap ml-4">${service.price}</span>
                                 </div>
                               </div>
                             ))}
@@ -595,7 +595,7 @@ const InteractiveCalendar = () => {
                                       <p className="text-gray-500">{service.duration} min</p>
                                       <p className="text-sm text-gray-600 mt-1">{service.description}</p>
                                     </div>
-                                    <span className="font-bold text-[#2193b0] whitespace-nowrap ml-4">${service.price}</span>
+                                    <span className="font-bold text-secondary whitespace-nowrap ml-4">${service.price}</span>
                                   </div>
                                 </div>
                               ))}
