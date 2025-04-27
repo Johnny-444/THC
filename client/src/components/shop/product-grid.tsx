@@ -69,14 +69,14 @@ const ProductGrid = () => {
         <div className="flex items-center">
           <span className="mr-2 font-medium">Filter:</span>
           <Select 
-            value={selectedCategoryId?.toString() || ''} 
-            onValueChange={(value) => setSelectedCategoryId(value ? Number(value) : null)}
+            value={selectedCategoryId?.toString() || 'all'} 
+            onValueChange={(value) => setSelectedCategoryId(value !== 'all' ? Number(value) : null)}
           >
             <SelectTrigger className="w-[180px]">
               <SelectValue placeholder="All Products" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="">All Products</SelectItem>
+              <SelectItem value="all">All Products</SelectItem>
               {categories?.map((category) => (
                 <SelectItem key={category.id} value={category.id.toString()}>
                   {category.name}
