@@ -291,7 +291,7 @@ const InteractiveCalendar = () => {
                   key={index}
                   className={`flex flex-col items-center justify-center min-w-[70px] p-3 rounded-lg transition-all ${
                     selectedDay && isSameDay(day, selectedDay)
-                      ? 'bg-[#2193b0] text-white'
+                      ? 'bg-secondary text-white'
                       : 'hover:bg-gray-100'
                   } ${
                     // Disable past days
@@ -325,19 +325,19 @@ const InteractiveCalendar = () => {
               <TabsList className="grid grid-cols-3 rounded-none border-0">
                 <TabsTrigger 
                   value="morning" 
-                  className="data-[state=active]:bg-transparent data-[state=active]:border-b-2 data-[state=active]:border-[#2193b0] data-[state=active]:shadow-none rounded-none"
+                  className="data-[state=active]:bg-transparent data-[state=active]:border-b-2 data-[state=active]:border-secondary data-[state=active]:shadow-none rounded-none"
                 >
                   Morning
                 </TabsTrigger>
                 <TabsTrigger 
                   value="afternoon" 
-                  className="data-[state=active]:bg-transparent data-[state=active]:border-b-2 data-[state=active]:border-[#2193b0] data-[state=active]:shadow-none rounded-none"
+                  className="data-[state=active]:bg-transparent data-[state=active]:border-b-2 data-[state=active]:border-secondary data-[state=active]:shadow-none rounded-none"
                 >
                   Afternoon
                 </TabsTrigger>
                 <TabsTrigger 
                   value="evening" 
-                  className="data-[state=active]:bg-transparent data-[state=active]:border-b-2 data-[state=active]:border-[#2193b0] data-[state=active]:shadow-none rounded-none"
+                  className="data-[state=active]:bg-transparent data-[state=active]:border-b-2 data-[state=active]:border-secondary data-[state=active]:shadow-none rounded-none"
                 >
                   Evening
                 </TabsTrigger>
@@ -356,7 +356,7 @@ const InteractiveCalendar = () => {
                               variant="outline"
                               className={`rounded-md border ${
                                 selectedTime === time 
-                                  ? 'bg-[#2193b0] text-white border-[#2193b0]' 
+                                  ? 'bg-secondary text-white border-secondary' 
                                   : 'border-gray-300'
                               }`}
                               onClick={() => handleTimeSelect(time)}
@@ -381,7 +381,7 @@ const InteractiveCalendar = () => {
                               variant="outline"
                               className={`rounded-md border ${
                                 selectedTime === time 
-                                  ? 'bg-[#2193b0] text-white border-[#2193b0]' 
+                                  ? 'bg-secondary text-white border-secondary' 
                                   : 'border-gray-300'
                               }`}
                               onClick={() => handleTimeSelect(time)}
@@ -406,7 +406,7 @@ const InteractiveCalendar = () => {
                               variant="outline"
                               className={`rounded-md border ${
                                 selectedTime === time 
-                                  ? 'bg-[#2193b0] text-white border-[#2193b0]' 
+                                  ? 'bg-secondary text-white border-secondary' 
                                   : 'border-gray-300'
                               }`}
                               onClick={() => handleTimeSelect(time)}
