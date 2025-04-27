@@ -133,21 +133,8 @@ const InteractiveCalendar = () => {
   
   // Add a service to the selection
   const addService = (service: Service) => {
-    // If this is the first service, set it as the main selected service
-    if (!selectedService) {
-      setSelectedService(service);
-    }
-    
-    // Add to the selectedServices array without replacing existing ones
-    setSelectedServices(prev => {
-      const updatedServices = [...prev];
-      // Check if service is already in the array to prevent duplicates
-      if (!updatedServices.some(s => s.id === service.id)) {
-        updatedServices.push(service);
-      }
-      return updatedServices;
-    });
-    
+    setSelectedService(service);
+    setSelectedServices([service]);
     setShowServiceSelect(false);
   };
   
@@ -332,37 +319,18 @@ const InteractiveCalendar = () => {
       <div className="p-4 border-b">
         {/* Service section */}
         {selectedServices.length > 0 ? (
-          <div className="space-y-4 mb-4">
-            {selectedServices.map((service, index) => (
-              <div key={service.id} className="p-4 bg-gray-50 rounded-lg flex justify-between items-center">
-                <div>
-                  <h3 className="font-bold">{service.name}</h3>
-                  <p className="text-gray-600">{selectedTime && selectedDate ? `${format(selectedDate, 'MMM d, yyyy')} · ${selectedTime}` : 'No time selected'}</p>
-                  <p className="text-[#2193b0]">${service.price}</p>
-                </div>
-                <button 
-                  className="text-[#2193b0]"
-                  onClick={() => {
-                    // If this is the only service, show service selector
-                    if (selectedServices.length === 1) {
-                      setShowServiceSelect(true);
-                    } else {
-                      // Remove this service from the array
-                      setSelectedServices(prev => prev.filter(s => s.id !== service.id));
-                      // If we're removing the primary selected service, set the first remaining one as primary
-                      if (selectedService?.id === service.id && selectedServices.length > 1) {
-                        const remaining = selectedServices.filter(s => s.id !== service.id);
-                        if (remaining.length > 0) {
-                          setSelectedService(remaining[0]);
-                        }
-                      }
-                    }
-                  }}
-                >
-                  {selectedServices.length === 1 ? 'Change' : 'Remove'}
-                </button>
-              </div>
-            ))}
+          <div className="mb-4 p-4 bg-gray-50 rounded-lg flex justify-between items-center">
+            <div>
+              <h3 className="font-bold">{selectedService?.name}</h3>
+              <p className="text-gray-600">{selectedTime && selectedDate ? `${format(selectedDate, 'MMM d, yyyy')} · ${selectedTime} - ${selectedTime.split(':')[0] === '11' ? '12:00 PM' : `${parseInt(selectedTime.split(':')[0]) + 1}:00 ${selectedTime.includes('AM') ? 'AM' : 'PM'}`}` : 'No time selected'}</p>
+              <p className="text-[#2193b0]">${selectedService?.price}</p>
+            </div>
+            <button 
+              className="text-[#2193b0]"
+              onClick={() => setShowServiceSelect(true)}
+            >
+              Change
+            </button>
           </div>
         ) : (
           <div className="mb-4">
@@ -426,18 +394,9 @@ const InteractiveCalendar = () => {
       <div className="p-4 border-b flex justify-between items-center">
         <div>
           <span className="font-bold text-lg">Total:</span>
-          <span className="text-gray-500 ml-2 text-sm">
-            {selectedServices.length > 0 
-              ? `${selectedServices.reduce((total, service) => total + service.duration, 0)}min` 
-              : "0min"}
-          </span>
+          <span className="text-gray-500 ml-2 text-sm">1h</span>
         </div>
-        <span className="font-bold text-xl">
-          ${selectedServices.length > 0 
-            ? parseFloat(selectedServices.reduce((total, service) => 
-                total + parseFloat(service.price), 0).toFixed(2)) 
-            : "0.00"}
-        </span>
+        <span className="font-bold text-xl">${selectedService?.price || "0.00"}</span>
       </div>
       
       {/* Continue button */}
@@ -465,35 +424,21 @@ const InteractiveCalendar = () => {
           </div>
           
           <div className="p-4 space-y-3">
-            {services?.map(service => {
-              const isSelected = selectedServices.some(s => s.id === service.id);
-              return (
-                <div 
-                  key={service.id}
-                  className={`p-4 border rounded-lg cursor-pointer transition-all ${
-                    isSelected 
-                      ? 'border-[#2193b0] bg-[#2193b0]/10' 
-                      : 'hover:border-[#2193b0]'
-                  }`}
-                  onClick={() => !isSelected && addService(service)}
-                >
-                  <div className="flex justify-between items-center">
-                    <div className="flex-1">
-                      <h4 className="font-bold">{service.name}</h4>
-                      <p className="text-gray-500">{service.duration} min</p>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <span className="font-bold">${service.price}</span>
-                      {isSelected && (
-                        <div className="bg-[#2193b0] text-white p-1 rounded-full">
-                          <Check className="h-4 w-4" />
-                        </div>
-                      )}
-                    </div>
+            {services?.map(service => (
+              <div 
+                key={service.id}
+                className="p-4 border rounded-lg cursor-pointer hover:border-[#2193b0]"
+                onClick={() => addService(service)}
+              >
+                <div className="flex justify-between items-center">
+                  <div>
+                    <h4 className="font-bold">{service.name}</h4>
+                    <p className="text-gray-500">{service.duration} min</p>
                   </div>
+                  <span className="font-bold">${service.price}</span>
                 </div>
-              );
-            })}
+              </div>
+            ))}
           </div>
         </div>
       )}
