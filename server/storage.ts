@@ -251,7 +251,38 @@ export class MemStorage implements IStorage {
     );
     
     const bookedTimes = bookedAppointments.map(appointment => appointment.time);
-    return allTimeSlots.filter(time => !bookedTimes.includes(time));
+    
+    // Apply 8-hour advance booking requirement
+    const now = new Date();
+    const selectedDate = new Date(date);
+    const timeSlots = allTimeSlots.filter(time => {
+      // Skip if the slot is already booked
+      if (bookedTimes.includes(time)) {
+        return false;
+      }
+      
+      // Parse the time string to get hours and minutes
+      const [hourMinute, period] = time.split(' ');
+      const [hour, minute = '0'] = hourMinute.split(':').map(Number);
+      
+      // Convert to 24-hour format
+      let hour24 = hour;
+      if (period === 'PM' && hour !== 12) {
+        hour24 += 12;
+      } else if (period === 'AM' && hour === 12) {
+        hour24 = 0;
+      }
+      
+      // Create appointment datetime
+      const appointmentTime = new Date(selectedDate);
+      appointmentTime.setHours(hour24, parseInt(minute), 0, 0);
+      
+      // Check if appointment is at least 8 hours in the future
+      const hoursDiff = (appointmentTime.getTime() - now.getTime()) / (1000 * 60 * 60);
+      return hoursDiff >= 8;
+    });
+    
+    return timeSlots;
   }
   
   // Cart methods

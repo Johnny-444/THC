@@ -206,6 +206,11 @@ const InteractiveCalendar = () => {
             <ChevronRight className="h-5 w-5" />
           </button>
         </div>
+        
+        {/* 8-hour advance booking notice */}
+        <div className="mt-2 text-center text-sm text-gray-500 bg-gray-100 p-2 rounded">
+          <p>Please note: Appointments must be booked at least 8 hours in advance.</p>
+        </div>
       </div>
       
       {/* Time period tabs */}
