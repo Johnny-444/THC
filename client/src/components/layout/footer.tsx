@@ -32,27 +32,27 @@ const Footer = () => {
             <ul className="space-y-2">
               <li>
                 <Link href="/booking">
-                  <a className="hover:text-secondary transition-colors">Book Appointment</a>
+                  <span className="hover:text-secondary transition-colors cursor-pointer">Book Appointment</span>
                 </Link>
               </li>
               <li>
                 <Link href="/#services">
-                  <a className="hover:text-secondary transition-colors">Services</a>
+                  <span className="hover:text-secondary transition-colors cursor-pointer">Services</span>
                 </Link>
               </li>
               <li>
                 <Link href="/shop">
-                  <a className="hover:text-secondary transition-colors">Shop</a>
+                  <span className="hover:text-secondary transition-colors cursor-pointer">Shop</span>
                 </Link>
               </li>
               <li>
                 <Link href="/#about">
-                  <a className="hover:text-secondary transition-colors">About Us</a>
+                  <span className="hover:text-secondary transition-colors cursor-pointer">About Us</span>
                 </Link>
               </li>
               <li>
                 <Link href="/#contact">
-                  <a className="hover:text-secondary transition-colors">Contact</a>
+                  <span className="hover:text-secondary transition-colors cursor-pointer">Contact</span>
                 </Link>
               </li>
             </ul>
