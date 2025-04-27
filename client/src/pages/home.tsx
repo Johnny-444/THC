@@ -1,18 +1,27 @@
-import { useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import Hero from '@/components/home/hero';
 import Features from '@/components/home/features';
 import Testimonials from '@/components/home/testimonials';
 import AboutContact from '@/components/home/about-contact';
 import { useQuery } from '@tanstack/react-query';
-import { Service } from '@shared/schema';
+import { Service, Category } from '@shared/schema';
 import { Link, useLocation } from 'wouter';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
 const Home = () => {
-  // Fetch featured services for the home page
+  const [showAllServices, setShowAllServices] = useState(false);
+  const [activeCategory, setActiveCategory] = useState<string | null>(null);
+  
+  // Fetch all services for the home page
   const { data: services, isLoading } = useQuery<Service[]>({
     queryKey: ['/api/services'],
+  });
+  
+  // Fetch service categories
+  const { data: categories } = useQuery<Category[]>({
+    queryKey: ['/api/categories/service'],
   });
   
   const [location] = useLocation();
@@ -72,12 +81,88 @@ const Home = () => {
           )}
           
           <div className="text-center">
-            <Link href="/booking">
-              <Button className="bg-secondary hover:bg-red-700 text-white">
-                View All Services
-              </Button>
-            </Link>
+            <Button 
+              className="bg-secondary hover:bg-red-700 text-white"
+              onClick={() => setShowAllServices(!showAllServices)}
+            >
+              {showAllServices ? 'Hide Services' : 'View All Services'}
+            </Button>
           </div>
+          
+          {/* All Services Section - Only appears when "View All Services" is clicked */}
+          {showAllServices && (
+            <div className="mt-12">
+              <h3 className="text-2xl font-heading text-center mb-8">ALL OUR SERVICES</h3>
+              
+              <Tabs defaultValue="all" className="w-full">
+                <TabsList className="w-full flex flex-wrap justify-center mb-6">
+                  <TabsTrigger 
+                    value="all" 
+                    className="px-4 py-2 m-1"
+                    onClick={() => setActiveCategory(null)}
+                  >
+                    All
+                  </TabsTrigger>
+                  {categories?.map((category) => (
+                    <TabsTrigger 
+                      key={category.id} 
+                      value={category.id.toString()}
+                      className="px-4 py-2 m-1"
+                      onClick={() => setActiveCategory(category.id.toString())}
+                    >
+                      {category.name}
+                    </TabsTrigger>
+                  ))}
+                </TabsList>
+                
+                <TabsContent value="all" className="mt-6">
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                    {services?.map((service) => (
+                      <Card key={service.id} className="service-card">
+                        <CardContent className="p-4">
+                          <h4 className="text-lg font-bold mb-2">{service.name}</h4>
+                          <p className="text-neutral text-sm mb-3">{service.description}</p>
+                          <div className="flex justify-between items-center">
+                            <span className="text-lg font-bold">${service.price.toString()}</span>
+                            <span className="text-sm text-neutral">{service.duration} min</span>
+                          </div>
+                        </CardContent>
+                      </Card>
+                    ))}
+                  </div>
+                </TabsContent>
+                
+                {categories?.map((category) => (
+                  <TabsContent key={category.id} value={category.id.toString()} className="mt-6">
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                      {services?.filter(service => 
+                        service.categoryId === category.id
+                      ).map((service) => (
+                        <Card key={service.id} className="service-card">
+                          <CardContent className="p-4">
+                            <h4 className="text-lg font-bold mb-2">{service.name}</h4>
+                            <p className="text-neutral text-sm mb-3">{service.description}</p>
+                            <div className="flex justify-between items-center">
+                              <span className="text-lg font-bold">${service.price.toString()}</span>
+                              <span className="text-sm text-neutral">{service.duration} min</span>
+                            </div>
+                          </CardContent>
+                        </Card>
+                      ))}
+                    </div>
+                  </TabsContent>
+                ))}
+              </Tabs>
+              
+              <div className="text-center mt-8">
+                <Link href="/booking">
+                  <Button className="bg-primary hover:bg-secondary text-white">
+                    Book An Appointment
+                  </Button>
+                </Link>
+              </div>
+            </div>
+          )}
         </div>
       </section>
       
