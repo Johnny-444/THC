@@ -115,7 +115,9 @@ export class MemStorage implements IStorage {
 
   async createUser(insertUser: InsertUser): Promise<User> {
     const id = this.userId++;
-    const user: User = { ...insertUser, id, isAdmin: false };
+    // Make the first registered user an admin
+    const isAdmin = this.users.size === 0;
+    const user: User = { ...insertUser, id, isAdmin };
     this.users.set(id, user);
     return user;
   }
@@ -422,15 +424,8 @@ export class MemStorage implements IStorage {
     this.products.set(shavingKit.id, shavingKit);
     this.products.set(seaSaltSpray.id, seaSaltSpray);
     
-    // Create admin user
-    const adminUser: User = {
-      id: this.userId++,
-      username: 'admin',
-      password: 'admin123', // In a real app, this would be hashed
-      isAdmin: true
-    };
-    
-    this.users.set(adminUser.id, adminUser);
+    // Admin user is now created through registration in the UI
+    // The first registered user will automatically become an admin
   }
 }
 

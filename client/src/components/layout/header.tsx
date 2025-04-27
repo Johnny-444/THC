@@ -94,6 +94,35 @@ const Header = () => {
                 </Button>
               </div>
               
+              {user ? (
+                <div className="flex items-center space-x-2">
+                  {user.isAdmin && (
+                    <Link href="/admin">
+                      <Button variant="ghost" className="flex items-center hover:text-secondary transition-colors">
+                        <User className="h-5 w-5 mr-1" />
+                        Admin
+                      </Button>
+                    </Link>
+                  )}
+                  <Button 
+                    variant="ghost" 
+                    className="flex items-center hover:text-secondary transition-colors"
+                    onClick={() => logoutMutation.mutate()}
+                    disabled={logoutMutation.isPending}
+                  >
+                    <LogOut className="h-5 w-5 mr-1" />
+                    Logout
+                  </Button>
+                </div>
+              ) : (
+                <Link href="/auth">
+                  <Button variant="ghost" className="flex items-center hover:text-secondary transition-colors">
+                    <User className="h-5 w-5 mr-1" />
+                    Login
+                  </Button>
+                </Link>
+              )}
+              
               <Button 
                 variant="ghost" 
                 size="icon" 
