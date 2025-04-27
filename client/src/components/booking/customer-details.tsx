@@ -70,14 +70,12 @@ const CustomerDetailsForm = () => {
         throw new Error('Missing booking information');
       }
       
-      // Create a new Date object instead of using the selected date directly
-      // This ensures it's treated as a Date on the server
-      const dateObj = new Date(selectedDate.getTime());
-      
+      // Prepare appointment data for submission
       const appointmentData = {
         serviceId: selectedService.id,
         barberId: selectedBarber.id,
-        date: dateObj,
+        // Server will convert this to a Date via our schema preprocessing
+        date: selectedDate, 
         time: selectedTime,
         timeOfDay: selectedTime.includes('AM') 
           ? 'morning' 

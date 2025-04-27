@@ -84,7 +84,21 @@ export const users = pgTable("users", {
 export const insertCategorySchema = createInsertSchema(categories);
 export const insertServiceSchema = createInsertSchema(services);
 export const insertBarberSchema = createInsertSchema(barbers);
-export const insertAppointmentSchema = createInsertSchema(appointments).omit({ id: true, createdAt: true, status: true, stripePaymentId: true });
+// Base schema from drizzle
+const baseAppointmentSchema = createInsertSchema(appointments).omit({ id: true, createdAt: true, status: true, stripePaymentId: true });
+
+// Custom appointment schema with date handling
+export const insertAppointmentSchema = baseAppointmentSchema.extend({
+  date: z.preprocess(
+    (arg) => {
+      if (typeof arg === 'string' || arg instanceof Date) {
+        return new Date(arg);
+      }
+      return arg;
+    },
+    z.date()
+  ),
+});
 export const insertProductSchema = createInsertSchema(products);
 export const insertCartItemSchema = createInsertSchema(cartItems).omit({ id: true });
 export const insertUserSchema = createInsertSchema(users).pick({ username: true, password: true });

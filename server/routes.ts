@@ -130,14 +130,22 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.post("/api/appointments", async (req, res) => {
     try {
-      const appointmentData = insertAppointmentSchema.parse(req.body);
+      // Pre-process the date field to ensure it's a Date object
+      const rawData = req.body;
+      
+      // Check if date is a string and convert it to a Date object
+      if (rawData.date && typeof rawData.date === 'string') {
+        rawData.date = new Date(rawData.date);
+      }
+      
+      const appointmentData = insertAppointmentSchema.parse(rawData);
       const appointment = await storage.createAppointment(appointmentData);
       res.status(201).json(appointment);
     } catch (error) {
       if (error instanceof z.ZodError) {
         return res.status(400).json({ message: "Invalid appointment data", errors: error.errors });
       }
-      res.status(500).json({ message: "Error creating appointment" });
+      res.status(500).json({ message: "Error creating appointment", details: error instanceof Error ? error.message : 'Unknown error' });
     }
   });
 
