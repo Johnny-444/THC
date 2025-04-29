@@ -4,10 +4,13 @@ import { Express } from "express";
 import session from "express-session";
 import { scrypt, randomBytes, timingSafeEqual } from "crypto";
 import { promisify } from "util";
-import { storage } from "./storage";
+import { PgStorage } from "./pg-storage";
 import { User as UserType } from "@shared/schema";
-// @ts-ignore
-import memorystore from "memorystore";
+import pgSession from "connect-pg-simple";
+import postgres from "postgres";
+
+// Initialize PostgreSQL storage
+const storage = new PgStorage();
 
 declare global {
   namespace Express {
@@ -32,14 +35,20 @@ async function comparePasswords(supplied: string, stored: string) {
 }
 
 export function setupAuth(app: Express) {
-  const MemoryStore = memorystore(session);
+  // Use PostgreSQL for session storage
+  const PostgresStore = pgSession(session);
+  
+  const connectionString = process.env.DATABASE_URL || 'postgresql://postgres:postgres@localhost:5432/thcdb';
   
   const sessionSettings: session.SessionOptions = {
     secret: process.env.SESSION_SECRET || "very-secret-key-change-me",
     resave: false,
     saveUninitialized: false,
-    store: new MemoryStore({
-      checkPeriod: 86400000 // prune expired entries every 24h
+    store: new PostgresStore({
+      conString: connectionString,
+      tableName: 'session', // Default session table name
+      createTableIfMissing: true,
+      pruneSessionInterval: 60 * 60 // Prune expired sessions every hour (in seconds)
     }),
     cookie: {
       maxAge: 24 * 60 * 60 * 1000, // 24 hours

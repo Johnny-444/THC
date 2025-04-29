@@ -1,9 +1,12 @@
 import type { Express, Request, Response } from "express";
 import { createServer, type Server } from "http";
 import Stripe from "stripe";
-import { storage } from "./storage";
+import { PgStorage } from "./pg-storage";
 import { insertAppointmentSchema, insertCartItemSchema } from "@shared/schema";
 import { z } from "zod";
+
+// Initialize PostgreSQL storage
+const storage = new PgStorage();
 import { setupAuth } from "./auth";
 
 if (!process.env.STRIPE_SECRET_KEY) {
