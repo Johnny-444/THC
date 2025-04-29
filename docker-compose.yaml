@@ -5,12 +5,6 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    ports:
-      - "5000"
-    labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.thc.rule=Host(`${DOMAIN:-localhost}`)"
-      - "traefik.http.services.thc.loadbalancer.server.port=5000"
     depends_on:
       - postgres
     environment:
@@ -28,8 +22,6 @@ services:
       - POSTGRES_PASSWORD=postgres
       - POSTGRES_USER=postgres
       - POSTGRES_DB=thcdb
-    ports:
-      - "5432:5432"
     restart: unless-stopped
 
 volumes:
