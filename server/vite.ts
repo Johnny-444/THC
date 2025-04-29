@@ -1,4 +1,4 @@
-import express, { type Express } from "express";
+import express, { type Express, type Request, type Response, type NextFunction } from "express";
 import fs from "fs";
 import path from "path";
 import { createServer as createViteServer, createLogger } from "vite";
@@ -68,33 +68,71 @@ export async function setupVite(app: Express, server: Server) {
 }
 
 export function serveStatic(app: Express) {
-  // Try multiple possible paths where the static files might be located
+  // In Docker container, the files are always in /app/dist
   const possiblePaths = [
-    path.resolve(import.meta.dirname, "public"),
-    path.resolve(import.meta.dirname, "../dist/public"),
+    path.resolve("/app/dist/public"),
     path.resolve(process.cwd(), "dist/public"),
-    path.resolve("/app/dist/public")
+    path.resolve(import.meta.dirname, "../dist/public"),
+    path.resolve(import.meta.dirname, "public")
   ];
   
   let distPath = null;
   for (const p of possiblePaths) {
-    if (fs.existsSync(p)) {
-      distPath = p;
-      log(`Found static files at: ${distPath}`);
-      break;
+    try {
+      if (fs.existsSync(p)) {
+        // Check if index.html exists in this path
+        const indexPath = path.join(p, "index.html");
+        if (fs.existsSync(indexPath)) {
+          distPath = p;
+          log(`Found static files at: ${distPath} with index.html`);
+          break;
+        } else {
+          log(`Found directory at ${p} but no index.html file`);
+        }
+      }
+    } catch (err: any) {
+      log(`Error checking path ${p}: ${err.message}`);
     }
   }
 
   if (!distPath) {
     const error = `Could not find static files. Tried: ${possiblePaths.join(', ')}`;
     log(error);
-    throw new Error(error);
+    
+    // Instead of throwing, create a simple fallback response
+    app.use("*", (_req: Request, res: Response) => {
+      res.status(500).send(`
+        <html>
+          <head><title>Server Error</title></head>
+          <body>
+            <h1>Server Error</h1>
+            <p>${error}</p>
+            <p>Environment: ${process.env.NODE_ENV || 'unknown'}</p>
+            <p>Current working directory: ${process.cwd()}</p>
+          </body>
+        </html>
+      `);
+    });
+    return;
   }
 
-  app.use(express.static(distPath));
+  // Serve static files with proper caching headers
+  app.use(express.static(distPath, {
+    maxAge: '1d',
+    etag: true
+  }));
 
-  // fall through to index.html if the file doesn't exist
-  app.use("*", (_req, res) => {
+  // Log all requests in production to help with debugging
+  if (process.env.NODE_ENV === 'production') {
+    app.use((req: Request, res: Response, next: NextFunction) => {
+      log(`Static file request: ${req.method} ${req.path}`);
+      next();
+    });
+  }
+
+  // Fall through to index.html for client-side routing
+  app.use("*", (req: Request, res: Response) => {
+    log(`Serving index.html for path: ${req.originalUrl}`);
     res.sendFile(path.resolve(distPath, "index.html"));
   });
 }
