@@ -3,8 +3,7 @@ FROM node:20-slim
 # Set working directory
 WORKDIR /app
 
-# Set npm config to avoid permission issues and increase timeout
-RUN npm config set unsafe-perm true
+# Set npm config to increase timeout (unsafe-perm has been deprecated)
 RUN npm config set network-timeout 300000
 
 # Install dependencies first (for better caching)
