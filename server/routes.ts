@@ -365,6 +365,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
   
+  // Health check endpoint
+  app.get('/api/health', (_req, res) => {
+    res.json({ status: 'ok', environment: process.env.NODE_ENV, timestamp: new Date().toISOString() });
+  });
+
   // Admin routes
   app.post("/api/services", async (req, res) => {
     try {
