@@ -9,14 +9,17 @@ WORKDIR /app
 # Install dependencies first (for better caching)
 COPY package.json package-lock.json* ./
 
-# Install dependencies using a simpler approach
-RUN npm install --production
+# Install ALL dependencies (including dev dependencies needed for build)
+RUN npm install
 
 # Copy the rest of the application
 COPY . .
 
 # Build the application
 RUN npm run build
+
+# Remove development dependencies after build is complete
+RUN npm prune --production
 
 # Set runtime environment variables
 ENV NODE_ENV=production
