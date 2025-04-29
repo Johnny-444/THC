@@ -1,4 +1,7 @@
-FROM node:20-slim
+FROM node:16-alpine
+
+# Install build dependencies for node-gyp if needed
+RUN apk add --no-cache python3 make g++
 
 # Set working directory
 WORKDIR /app
@@ -6,15 +9,14 @@ WORKDIR /app
 # Install dependencies first (for better caching)
 COPY package.json package-lock.json* ./
 
-# Install dependencies with specific flags to handle errors better
-RUN npm ci --only=production --no-audit --no-fund --prefer-offline --loglevel verbose --fetch-timeout=300000 || \
-    (npm cache clean --force && npm install --no-audit --no-fund --prefer-offline --loglevel verbose --fetch-timeout=300000)
+# Install dependencies using a simpler approach
+RUN npm install --production
 
 # Copy the rest of the application
 COPY . .
 
 # Build the application
-RUN NODE_OPTIONS="--max-old-space-size=4096" npm run build
+RUN npm run build
 
 # Set runtime environment variables
 ENV NODE_ENV=production
